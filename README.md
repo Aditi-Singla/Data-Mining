@@ -1,2 +1,3 @@
 # Data-Mining
-Data Mining course projects
+
+Projects done in COL 761 - Data Mining, 2018
