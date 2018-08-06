@@ -5,15 +5,34 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-    string in_file = argv[1];
-    double confidence = stod(argv[2]);
+    string inFile = argv[1];
+    double suppThold = stod(argv[2]);
     string algorithm = argv[3];
-    string out_file = argv[4];
+    string outFile = argv[4];
 
-    cout << "Input file : " << in_file << endl;
-    cout << "Confidence Threshold : " << confidence << endl;
-    cout << "Algorithm : " << algorithm.substr(1) << endl;
-    cout << "Writing Results to : " << out_file << endl;
+    cout << "Input file : " << inFile << endl;
+    cout << "Confidence Threshold : " << suppThold << endl;
+    cout << "Algorithm : " << algorithm << endl;
+
+    std::vector<item_set> frequentItemsets;
+    if (algorithm == "-apriori") {
+        frequentItemsets = freqItemsetsApriori(inFile, suppThold);
+    }
+    else if (algorithm == "-fptree") {
+        frequentItemsets = freqItemsetsFPTree(inFile, suppThold);
+    }
+
+    cout << "Writing Results to : " << outFile << endl;
+    ofstream outputStream;
+    outputStream.open(outFile + ".txt");
+    for (item_set freqItemset : frequentItemsets) {
+        // print_vec(freqItemset, outputStream);
+        for (int item : freqItemset) {
+            outputStream << item << ' ';
+        }
+        outputStream << endl;
+    }
+    outputStream.close();
 
     return 0;
 }

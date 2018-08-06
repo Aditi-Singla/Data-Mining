@@ -13,4 +13,4 @@ all : src/*.cpp
 	$(CC) src/*.cpp $(CXXFLAGS) -o fpm
 
 clean : 
-	rm -f fpm
+	rm -f fpm *.txt

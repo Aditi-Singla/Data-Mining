@@ -3,4 +3,6 @@
 
 #include "Input.h"
 
+std::vector<item_set> freqItemsetsFPTree(std::string &inFile, double suppThold);
+
 #endif
