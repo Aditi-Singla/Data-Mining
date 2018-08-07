@@ -3,8 +3,6 @@
 #include <vector>
 #include <unordered_map>
 
-typedef std::vector<int> item_set;
-
 template <typename T>
 void print_vec(std::vector<T> &vec, std::ofstream &outStream);
 
