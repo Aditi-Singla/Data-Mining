@@ -1,9 +1,14 @@
 #include "apriori.h"
 
-#include <algorithm>
-#include <set>
-
 using namespace std;
+
+apriori::apriori(string &inFileName) {
+    inFile = inFileName;
+}
+
+vector<item_set> apriori::getFrequentItemsets(double suppThold) {
+    return freqItemsets;
+}
 
 // int firstPass(string &inFile, double suppThold, vector<item_set> &F_1) {
 //     int numTransactions = 0;
@@ -34,21 +39,22 @@ using namespace std;
 //     return numTransactions;
 // }
 
-vector<item_set> freqItemsetsApriori(string &inFile, double suppThold) {
+// vector<item_set> freqItemsetsApriori(string &inFile, double suppThold) {
 
-    vector<item_set> freqItemsets;
-    int numTransactions, support;
+//     vector<item_set> freqItemsets;
+//     int numTransactions, support;
     
-    // first pass
-    // vector<int> F_1;
-    // numTransactions = firstPass(inFile, suppThold, F_1);
-    // support = suppThold * 100.0 / numTransactions;
+//     // first pass
+//     // vector<int> F_1;
+//     // numTransactions = firstPass(inFile, suppThold, F_1);
+//     // support = suppThold * 100.0 / numTransactions;
 
-    cout << F_1.size() << ' ' << numTransactions << endl;
+//     // cout << F_1.size() << ' ' << numTransactions << endl;
 
-    set<item_set> F_k;
-    set<item_set> C_k;
+//     set<item_set> F_k;
+//     set<item_set> C_k;
 
 
-    return freqItemsets;
-}
+//     return freqItemsets;
+// }
+

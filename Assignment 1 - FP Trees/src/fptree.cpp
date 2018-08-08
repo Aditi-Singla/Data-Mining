@@ -1,8 +1,11 @@
-#include "fptree.h"
+#include "fpTree.h"
 
 using namespace std;
 
-vector<item_set> freqItemsetsFPTree(string &inFile, double suppThold) {
-    vector<item_set> freqItemsets;
+fpTree::fpTree(string &inFileName) {
+    inFile = inFileName;
+}
+
+vector<item_set> fpTree::getFrequentItemsets(double suppThold) {
     return freqItemsets;
 }

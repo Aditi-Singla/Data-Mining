@@ -1,12 +1,12 @@
-#ifndef APRIORI_H
-#define APRIORI_H
+#ifndef FPTREE_H
+#define FPTREE_H
 
 #include "fiMiner.h"
 
-class apriori : public fiMiner {
+class fpTree : public fiMiner {
 
     public:
-        apriori(std::string &inFileName);
+        fpTree(std::string &inFileName);
         std::vector<item_set> getFrequentItemsets(double suppThold);
 };
 

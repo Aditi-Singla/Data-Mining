@@ -1,5 +1,5 @@
 #include "apriori.h"
-#include "fptree.h"
+#include "fpTree.h"
 
 using namespace std;
 
@@ -16,10 +16,12 @@ int main(int argc, char **argv) {
 
     std::vector<item_set> frequentItemsets;
     if (algorithm == "-apriori") {
-        frequentItemsets = freqItemsetsApriori(inFile, suppThold);
+        apriori fiMiner(inFile);
+        frequentItemsets = fiMiner.getFrequentItemsets(suppThold);
     }
     else if (algorithm == "-fptree") {
-        frequentItemsets = freqItemsetsFPTree(inFile, suppThold);
+        fpTree fiMiner(inFile);
+        frequentItemsets = fiMiner.getFrequentItemsets(suppThold);
     }
 
     cout << "Writing Results to : " << outFile << endl;
