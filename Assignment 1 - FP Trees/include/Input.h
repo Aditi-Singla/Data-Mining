@@ -4,9 +4,10 @@
 #include <string>
 #include <sstream>
 #include <iterator>
+#include <set>
 
 #include "Utils.h"
 
-std::vector<int> parseLine(std::string line);
+std::set<int> parseLine(std::string &line);
 
 #endif

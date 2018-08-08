@@ -2,7 +2,6 @@
 #define APRIORI_H
 
 #include <map>
-#include <set>
 
 #include "fiMiner.h"
 

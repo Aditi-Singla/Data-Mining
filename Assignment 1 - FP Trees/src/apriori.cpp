@@ -17,10 +17,10 @@ void apriori::firstPass(double suppThold) {
     if (inputStream.is_open()) {
         string line;
         while (getline(inputStream, line)) {
-            // TODO - vector -> set?
-            vector<int> transaction = parseLine(line);
-            for (int item : transaction) {
-                C_k[item_set{item}] += 1;
+            // TODO - fix 2 passes over each transaction, one to pass other to update count
+            set<int> transaction = parseLine(line);
+            for (auto it = transaction.begin(); it != transaction.end(); it++) {
+                C_k[item_set{*it}] += 1;
             }
             numTransactions += 1;
         }
@@ -39,9 +39,8 @@ void apriori::firstPass(double suppThold) {
 }
 
 void apriori::generateCandidates() {
-
-    map<item_set, int> C_k_1;
-    // generate C_k+1 from F_k
+    // clear C_k and generate C_k+1 from _k
+    C_k.clear();
     for (auto it1 = F_k.begin(); it1 != F_k.end(); it1++) {
         for (auto it2 = F_k.begin(); it2 != it1; it2++) {
             item_set c;
@@ -56,20 +55,18 @@ void apriori::generateCandidates() {
             // check frequent subsets
             bool allIn = true;
             // TODO - subset generation
-            for (item_set subset : genSubsets(c)) {
-                if (F_k.find(subset) == F_k.end()) {
-                    allIn = false;
-                    break;
-                }
-            }
+            // for (item_set subset : genSubsets(c)) {
+            //     if (F_k.find(subset) == F_k.end()) {
+            //         allIn = false;
+            //         break;
+            //     }
+            // }
             if (allIn) {
-                C_k_1[c] = 0;
+                C_k[c] = 0;
             }
         }
     }
-    C_k = C_k_1;
 }
-
 
 vector<item_set> apriori::getFrequentItemsets(double suppThold) {
     // run the first pass - initialise F_1
@@ -78,35 +75,31 @@ vector<item_set> apriori::getFrequentItemsets(double suppThold) {
     while (!F_k.empty()) {
         generateCandidates();
         k += 1;
-        set<item_set> F_k_1;
         // calculate the support
         ifstream inputStream(inFile);
         if (inputStream.is_open()) {
             string line;
             while (getline(inputStream, line)) {
-                // TODO - vector -> set?
-                vector<int> transaction = parseLine(line);
-                for (item_set c : C_k) {
-                    // TODO - subset query
-                    if (C_k[c] < rawSuppThold && c in transaction) {
+                set<int> transaction = parseLine(line);
+                for (auto it = C_k.begin(); it != C_k.end(); it++) {
+                    item_set c = it->first;
+                    if (C_k[c] < rawSuppThold && includes(
+                        transaction.begin(), transaction.end(), 
+                        c.begin(), c.end())) {
                         C_k[c] += 1;
                     }
                 }
-
             }
             inputStream.close();
         }
 
-        // calculate the frequent items and prune
+        // prune to get frequent items
+        F_k.clear();
         for (auto it = C_k.begin(); it != C_k.end(); it++) {
             if (it->second >= rawSuppThold) {
-                F_k_1.insert(it->first);
+                F_k.insert(it->first);
             }
         }
-        F_k = F_k_1;
     }
-
-    cout << numTransactions << ' ' << F_k.size() << endl;
-
     return freqItemsets;
 }

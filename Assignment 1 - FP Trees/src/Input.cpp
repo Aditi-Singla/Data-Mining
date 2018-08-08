@@ -2,9 +2,8 @@
 
 using namespace std;
 
-vector<int> parseLine(string line) {
-    // TODO - vector -> set?
+set<int> parseLine(string &line) {
     istringstream line_stream(line);
-    vector<int> transaction(istream_iterator<int>{line_stream}, istream_iterator<int>());
+    set<int> transaction(istream_iterator<int>{line_stream}, istream_iterator<int>());
     return transaction;
 }
