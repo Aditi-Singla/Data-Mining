@@ -2,7 +2,6 @@
 #define FIMINER_H
 
 #include <set>
-#include <algorithm>
 
 #include "Input.h"
 
