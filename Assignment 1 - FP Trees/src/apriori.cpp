@@ -1,6 +1,7 @@
 #include "apriori.h"
 
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -50,19 +51,21 @@ void apriori::generateCandidates() {
                 c.assign(f1.begin(), f1.end() - 1);
                 c.push_back(min(f1.back(), f2.back()));
                 c.push_back(max(f1.back(), f2.back()));
-            }
-
-            // check frequent subsets
-            bool allIn = true;
-            // TODO - subset generation
-            // for (item_set subset : genSubsets(c)) {
-            //     if (F_k.find(subset) == F_k.end()) {
-            //         allIn = false;
-            //         break;
-            //     }
-            // }
-            if (allIn) {
-                C_k[c] = 0;
+                
+                // check frequent subsets
+                bool allIn = true;
+                for (auto it = c.begin(); it != c.end(); it++) {
+                    int c1 = *it;
+                    c.erase(it);
+                    if (F_k.find(c) == F_k.end()) {
+                        allIn = false;
+                        break;
+                    }
+                    c.insert(it, c1);
+                }
+                if (allIn) {
+                    C_k[c] = 0;
+                }
             }
         }
     }
@@ -73,6 +76,7 @@ vector<item_set> apriori::getFrequentItemsets(double suppThold) {
     firstPass(suppThold);
 
     while (!F_k.empty()) {
+        // cout << k << endl;
         generateCandidates();
         k += 1;
         // calculate the support
@@ -93,6 +97,7 @@ vector<item_set> apriori::getFrequentItemsets(double suppThold) {
             inputStream.close();
         }
 
+        freqItemsets.insert(freqItemsets.end(),F_k.begin(),F_k.end());
         // prune to get frequent items
         F_k.clear();
         for (auto it = C_k.begin(); it != C_k.end(); it++) {

@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
     string outFile = argv[4];
 
     cout << "Input file : " << inFile << endl;
-    cout << "Confidence Threshold : " << suppThold << endl;
+    cout << "Support Threshold : " << suppThold << endl;
     cout << "Algorithm : " << algorithm << endl;
 
     std::vector<item_set> frequentItemsets;
@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
         frequentItemsets = fiMiner.getFrequentItemsets(suppThold);
     }
 
-    cout << "Writing Results to : " << outFile << endl;
+    cout << "Writing Results to : " << outFile << ".txt" << endl;
     ofstream outputStream;
     outputStream.open(outFile + ".txt");
     for (item_set freqItemset : frequentItemsets) {
