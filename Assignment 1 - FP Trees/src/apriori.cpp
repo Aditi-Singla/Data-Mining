@@ -96,8 +96,8 @@ vector<item_set> apriori::getFrequentItemsets(double suppThold) {
             }
             inputStream.close();
         }
+        freqItemsets.insert(freqItemsets.end(), F_k.begin(), F_k.end());
 
-        freqItemsets.insert(freqItemsets.end(),F_k.begin(),F_k.end());
         // prune to get frequent items
         F_k.clear();
         for (auto it = C_k.begin(); it != C_k.end(); it++) {
