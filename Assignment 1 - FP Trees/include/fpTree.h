@@ -9,7 +9,7 @@ class fpNode {
         int count;      
         fpNode* next;   // next item in the linked list
         fpNode* parent;
-        std::vector<fpNode*> children;
+        std::unordered_set<fpNode*> children;
         fpNode();
         fpNode(int i, int c);
         fpNode(int i, fpNode* p);
@@ -28,7 +28,9 @@ class fpTree : public fiMiner {
         std::unordered_map<int, fpNode*> headPointers;
         std::unordered_map<int, fpNode*> currPointers;
         std::unordered_map<int, int> priorityMap;
+        struct sortByFrequency;
         void firstPass(double suppThold);
+        void initialiseTree();
         void buildFPTree();
 };
 

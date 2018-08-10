@@ -19,7 +19,7 @@ void apriori::firstPass(double suppThold) {
         string line;
         while (getline(inputStream, line)) {
             // TODO - fix 2 passes over each transaction, one to pass other to update count
-            set<int> transaction = parseLine(line);
+            vector<int> transaction = parseLineVec(line);
             for (auto it = transaction.begin(); it != transaction.end(); it++) {
                 C_k[item_set{*it}] += 1;
             }

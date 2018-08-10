@@ -2,6 +2,7 @@
 #define FIMINER_H
 
 #include <set>
+#include <unordered_set>
 
 #include "Input.h"
 

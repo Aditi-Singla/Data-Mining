@@ -9,5 +9,6 @@
 #include "Utils.h"
 
 std::set<int> parseLine(std::string &line);
+std::vector<int> parseLineVec(std::string &line);
 
 #endif
