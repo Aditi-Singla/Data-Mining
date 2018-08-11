@@ -1,6 +1,8 @@
 #ifndef APRIORI_H
 #define APRIORI_H
 
+#include <set>
+#include <unordered_set>
 #include <map>
 
 #include "fiMiner.h"

@@ -81,7 +81,6 @@ void fpTree::buildFPTree() {
 
     ifstream inputStream(inFile);
     if (inputStream.is_open()) {
-        fpNode* par = root;
 
         string line;
         while (getline(inputStream, line)) {
@@ -89,23 +88,24 @@ void fpTree::buildFPTree() {
             // sort according to frequency
             sort(transaction.begin(), transaction.end(), sortByFrequency(this));
 
+            fpNode* par = root;
             // build tree per transaction
             for (int item : transaction) {
                 // check if item is frequent
                 if (priorityMap.find(item) != priorityMap.end()) {
                     fpNode* curr;
-                    auto it = par->children.find(curr);
+                    auto it = par->children.find(item);
                     if (it == par->children.end()) {
                         // new prefix - new node
                         curr = new fpNode(item, 1, par);
-                        par->children.insert(curr);
+                        par->children[item] = curr;
                         // update current pointers
                         currPointers[item]->next = curr;
                         currPointers[item] = curr;
                     } 
                     else {
                         // prefix already in the tree
-                        curr = *it;
+                        curr = it->second;
                         curr->count++;
                     }
                     par = curr;

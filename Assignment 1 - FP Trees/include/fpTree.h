@@ -1,6 +1,9 @@
 #ifndef FPTREE_H
 #define FPTREE_H
 
+#include <set>
+#include <unordered_set>
+
 #include "fiMiner.h"
 
 class fpNode {
@@ -9,7 +12,7 @@ class fpNode {
         int count;      
         fpNode* next;   // next item in the linked list
         fpNode* parent;
-        std::unordered_set<fpNode*> children;
+        std::unordered_map<int, fpNode*> children; // item to fpNode*
         fpNode();
         fpNode(int i, int c);
         fpNode(int i, fpNode* p);

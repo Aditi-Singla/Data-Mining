@@ -1,9 +1,6 @@
 #ifndef FIMINER_H
 #define FIMINER_H
 
-#include <set>
-#include <unordered_set>
-
 #include "Input.h"
 
 typedef std::vector<int> item_set;
