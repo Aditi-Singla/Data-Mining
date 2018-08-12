@@ -24,10 +24,11 @@ class fpTree : public fiMiner {
     public:
         fpNode* root;
         fpTree(std::string &inFileName);
+        fpTree(int rawSupportThreshold);
         std::vector<item_set> getFrequentItemsets(double suppThold);
 
     private:
-        int numTransactions;
+        int numTransactions, rawSuppThold;
         std::unordered_map<int, fpNode*> headPointers;
         std::unordered_map<int, fpNode*> currPointers;
         std::unordered_map<int, int> priorityMap;
@@ -35,6 +36,7 @@ class fpTree : public fiMiner {
         void firstPass(double suppThold);
         void initialiseTree();
         void buildFPTree();
+        void addTransaction(std::vector<int> transaction, int count, bool priorityCheck);
 };
 
 #endif
