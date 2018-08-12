@@ -144,11 +144,6 @@ void fpTree::buildFPTree() {
             // sort according to frequency
             sort(transaction.begin(), transaction.end(), sortByFrequency(this));
 
-            // for (auto item : transaction) {
-            //     cout << item << " ";
-            // }
-            // cout << endl;
-
             addTransaction(transaction, 1, true);
             
         }
