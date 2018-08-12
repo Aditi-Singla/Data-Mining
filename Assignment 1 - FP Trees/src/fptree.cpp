@@ -90,13 +90,8 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
         if (!priorityCheck || (priorityMap.find(item) != priorityMap.end())) {
             fpNode* curr;
             auto it = par->children.find(item);
-            // cout << "Here" << endl;
-            // for (auto it1 = par->children.begin(); it1 != par->children.end(); it1++) {
-            //     cout << it1->first << " ";
-            // }
-            // cout << endl;
+           
             if (it == par->children.end()) {
-                // cout << "Hello" << endl;
                 // new prefix - new node
                 curr = new fpNode(item, count, par);
                 par->children[item] = curr;
@@ -113,7 +108,6 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
                 currPointers[item] = curr;
             } 
             else {
-                // cout << "Hi" << endl;
                 // prefix already in the tree
                 curr = it->second;
                 curr->count += count;
@@ -122,7 +116,6 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
             par = curr;
         }
         else {
-            // cout << "There" << endl;
             // all infrequent items - ignore afterwards
             break;
         }
@@ -150,6 +143,33 @@ void fpTree::buildFPTree() {
         inputStream.close();
     }
 }
+
+void fpTree::fpGrowth() {
+
+    if (root->children.empty()) {
+        return freqItemsets;
+    }
+    if (singlePrefixPath()) {
+        // Make all possible subsets and return them, since the infrequent items were pruned while construction of fpTree
+    }
+    else {
+        // Multi Prefix Path, traverse over the pointer table and go on one by one
+        for (auto it = headPointers.begin(); it != headPointers.end(); it++) {
+            int item = it->first;
+            fpNode* node = it->second;
+            if (node->count < rawSuppThold) {
+                break;
+            }
+            fpTree subTree = new fpTree(rawSuppThold);
+            while (node->next != NULL) {
+                node = node->next;
+                int count = node->count;
+                vector<int> transaction = node->getTransaction();
+                subTree.addTransaction(transaction, node->count);
+            }
+        }
+    }
+} 
 
 vector<item_set> fpTree::getFrequentItemsets(double suppThold) {
 
