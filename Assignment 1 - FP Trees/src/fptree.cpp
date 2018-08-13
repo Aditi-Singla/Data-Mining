@@ -20,10 +20,9 @@ vector<int> fpNode::getTransaction() {
     while (curr->parent->parent != NULL) {
         curr = curr->parent;
         transaction.push_back(curr->item);
-        // cout << curr->item << endl;
     }
+    // TODO - better way to handle this?
     reverse(transaction.begin(), transaction.end());
-    // cout << "5" << endl;
     return transaction;
 }
 
@@ -88,10 +87,6 @@ struct fpTree::sortByFrequency {
 
 void fpTree::initialiseTree() {
     root = new fpNode;
-    // for (auto it = priorityMap.begin(); it != priorityMap.end(); it++) {
-    //     headPointers[it->first] = new fpNode();
-    //     currPointers[it->first] = headPointers[it->first];
-    // }
 }
 
 void fpTree::addTransaction(vector<int> transaction, int count, bool priorityCheck) {
@@ -99,18 +94,13 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
     fpNode* par = root;
     // build tree per transaction
     for (int item : transaction) {
-        // if priorityCheck is false, add all items
-        // else check if item is frequent
+        // if priorityCheck is false, add all items else check if item is frequent
         if (!priorityCheck || (priorityMap.find(item) != priorityMap.end())) {
             fpNode* curr;
             auto it = par->children.find(item);
-            // cout << "Here" << endl;
-            // for (auto it1 = par->children.begin(); it1 != par->children.end(); it1++) {
-            //     cout << it1->first << " ";
-            // }
-            // cout << endl;
+
+
             if (it == par->children.end()) {
-                // cout << "Hello" << endl;
                 // new prefix - new node
                 curr = new fpNode(item, count, par);
                 par->children[item] = curr;
@@ -127,7 +117,6 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
                 currPointers[item] = curr;
             } 
             else {
-                // cout << "Hi" << endl;
                 // prefix already in the tree
                 curr = it->second;
                 curr->count += count;
@@ -136,7 +125,6 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
             par = curr;
         }
         else {
-            // cout << "There" << endl;
             // all infrequent items - ignore afterwards
             break;
         }
@@ -181,6 +169,7 @@ vector<item_set> getPowerSet(item_set transaction) {
     if (transaction.size() == 1) {
         powerset.push_back(transaction);
     }
+
     if (transaction.size() > 1) {
         int item  = transaction[0];
         item_set item1;
@@ -188,6 +177,7 @@ vector<item_set> getPowerSet(item_set transaction) {
         powerset.push_back(item1);
         item_set sub(transaction.begin()+1,transaction.end());
         vector<item_set> powerset1 = getPowerSet(sub);
+        
         for (auto itemset : powerset1) {
             powerset.push_back(itemset);
             itemset.push_back(item);
