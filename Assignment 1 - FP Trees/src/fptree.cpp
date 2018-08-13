@@ -20,10 +20,9 @@ vector<int> fpNode::getTransaction() {
     while (curr->parent->parent != NULL) {
         curr = curr->parent;
         transaction.push_back(curr->item);
-        // cout << curr->item << endl;
     }
+    // TODO - better way to handle this?
     reverse(transaction.begin(), transaction.end());
-    // cout << "5" << endl;
     return transaction;
 }
 
@@ -36,12 +35,12 @@ fpTree::fpTree(string &inFileName) {
 
 fpTree::fpTree(int rawSupportThreshold) {
     rawSuppThold = rawSupportThreshold;
-    if (headPointers.empty()){
-        cout << "head pointers empty" << endl;
-    }
-    else {
-        cout << "Not empty" << endl;
-    }
+    // if (headPointers.empty()){
+    //     cout << "head pointers empty" << endl;
+    // }
+    // else {
+    //     cout << "Not empty" << endl;
+    // }
 }
 
 void fpTree::firstPass(double suppThold) {
@@ -105,18 +104,13 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
     fpNode* par = root;
     // build tree per transaction
     for (int item : transaction) {
-        // if priorityCheck is false, add all items
-        // else check if item is frequent
+        // if priorityCheck is false, add all items else check if item is frequent
         if (!priorityCheck || (priorityMap.find(item) != priorityMap.end())) {
             fpNode* curr;
             auto it = par->children.find(item);
-            // cout << "Here" << endl;
-            // for (auto it1 = par->children.begin(); it1 != par->children.end(); it1++) {
-            //     cout << it1->first << " ";
-            // }
-            // cout << endl;
+
+
             if (it == par->children.end()) {
-                // cout << "Hello" << endl;
                 // new prefix - new node
                 curr = new fpNode(item, count, par);
                 par->children[item] = curr;
@@ -133,7 +127,6 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
                 currPointers[item] = curr;
             } 
             else {
-                // cout << "Hi" << endl;
                 // prefix already in the tree
                 curr = it->second;
                 curr->count += count;
@@ -142,7 +135,6 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
             par = curr;
         }
         else {
-            // cout << "There" << endl;
             // all infrequent items - ignore afterwards
             break;
         }
@@ -187,6 +179,7 @@ vector<item_set> getPowerSet(item_set transaction) {
     if (transaction.size() == 1) {
         powerset.push_back(transaction);
     }
+
     if (transaction.size() > 1) {
         int item  = transaction[0];
         item_set item1;
@@ -194,6 +187,7 @@ vector<item_set> getPowerSet(item_set transaction) {
         powerset.push_back(item1);
         item_set sub(transaction.begin()+1,transaction.end());
         vector<item_set> powerset1 = getPowerSet(sub);
+        
         for (auto itemset : powerset1) {
             powerset.push_back(itemset);
             itemset.push_back(item);
@@ -226,63 +220,58 @@ void fpTree::fpGrowth() {
             transaction.push_back(curr->item);
             curr = curr->children.begin()->second;
         }
-        cout << "Transaction : " << endl;
-        for (auto item : transaction) {
-            cout << item << " ";
-        }
-        cout << endl;
+        // cout << "Transaction : " << endl;
+        // for (auto item : transaction) {
+        //     cout << item << " ";
+        // }
+        // cout << endl;
         freqItemsets = getPowerSet(transaction);
-        cout << "If clause" << endl;
-        for (auto itemset : freqItemsets) {
-            for (auto item : itemset) {
-                cout << item << " ";
-            }
-            cout << endl;
-        }
-        cout << "End If clause" << endl;
+        // cout << "If clause" << endl;
+        // for (auto itemset : freqItemsets) {
+        //     for (auto item : itemset) {
+        //         cout << item << " ";
+        //     }
+        //     cout << endl;
+        // }
+        // cout << "End If clause" << endl;
     }
     else {
         // Multi Prefix Path, traverse over the pointer table and go on one by one
         for (auto it = headPointers.begin(); it != headPointers.end(); it++) {
             int item = it->first;
-            cout << item << endl;
+            // cout << item << endl;
             fpNode* node = it->second;
-            cout << item << endl;
-            if (node->count < rawSuppThold) {
-                cout << "Leaving with a count " << node->count << endl;
-                break;
-            }
+            // cout << item << endl;
+            // if (node->count < rawSuppThold) {
+            //     cout << "Leaving with a count " << node->count << endl;
+            //     break;
+            // }
             freqItemsets.push_back(item_set{item});
-            // cout << "Here" << endl;
             fpTree* subTree = new fpTree(rawSuppThold);
             subTree->root = new fpNode;
-            // cout << "There" << endl;
             while (node->next != NULL) {
                 node = node->next;
                 int count = node->count;
-                cout << "Here : " << count << endl;
                 // Get all the items from root to this item (excluding this item)
                 vector<int> transaction = node->getTransaction();
-                cout << "Here" << endl;
-                // cout << "Now here " << endl;
                 subTree->addTransaction(transaction, node->count, false);
             }
-            printTree(subTree->root);
+            // printTree(subTree->root);
             subTree->fpGrowth();
             vector<item_set> freqItemsetsSubtree = subTree->getFrequentItemsets();
-            cout << "Size : " << freqItemsetsSubtree.size() << endl;
+            // cout << "Size : " << freqItemsetsSubtree.size() << endl;
             for (auto& itemset : freqItemsetsSubtree) {
                 itemset.push_back(item);
                 sort(itemset.begin(), itemset.end());
             }
-            cout << "Else clause" << endl;
-            for (auto itemset : freqItemsetsSubtree) {
-                for (auto item : itemset) {
-                    cout << item << " ";
-                }
-                cout << endl;
-            }
-            cout << "End Else clause" << endl;
+            // cout << "Else clause" << endl;
+            // for (auto itemset : freqItemsetsSubtree) {
+            //     for (auto item : itemset) {
+            //         cout << item << " ";
+            //     }
+            //     cout << endl;
+            // }
+            // cout << "End Else clause" << endl;
             freqItemsets.insert(freqItemsets.end(), freqItemsetsSubtree.begin(), freqItemsetsSubtree.end());
         }
     }
@@ -302,23 +291,16 @@ vector<item_set> fpTree::getFrequentItemsets(double suppThold) {
     // build the FP Tree
     buildFPTree();
 
-    for (auto it = headPointers.begin(); it != headPointers.end(); it++) {
-        cout << it->first << " : " << it->second->count << endl;
-    }
+    // for (auto it = headPointers.begin(); it != headPointers.end(); it++) {
+    //     cout << it->first << " : " << it->second->count << endl;
+    // }
 
     cout << rawSuppThold << endl;
 
-    printTree(root);
+    // printTree(root);
 
     // run the fp tree growth
     fpGrowth();
 
-    for (auto itemset : freqItemsets) {
-        for (auto item : itemset) {
-            cout << item << " ";
-        }
-        cout << endl;
-    }
-    
     return freqItemsets;
 }
