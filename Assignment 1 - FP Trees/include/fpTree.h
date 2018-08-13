@@ -31,6 +31,7 @@ class fpTree : public fiMiner {
         void fpGrowth();
         bool singlePrefixPath();
         void addTransaction(std::vector<int> transaction, int count, bool priorityCheck);
+        void printHeadPointers();
 
     private:
         int numTransactions, rawSuppThold;
