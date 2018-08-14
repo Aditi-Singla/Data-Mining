@@ -85,15 +85,11 @@ struct fpTree::sortByFrequency {
     }
 };
 
-void fpTree::initialiseTree() {
-    root = new fpNode;
-}
-
-void fpTree::addTransaction(vector<int> transaction, int count, bool priorityCheck) {
+void fpTree::addTransaction(vector<int> &transaction, int count, bool priorityCheck) {
 
     fpNode* par = root;
     // build tree per transaction
-    for (int item : transaction) {
+    for (auto& item : transaction) {
         // if priorityCheck is false, add all items else check if item is frequent
         if (!priorityCheck || (priorityMap.find(item) != priorityMap.end())) {
             fpNode* curr;
@@ -133,8 +129,8 @@ void fpTree::addTransaction(vector<int> transaction, int count, bool priorityChe
 
 void fpTree::buildFPTree() {
 
-    // initialise root, head and current pointers for each frequent item
-    initialiseTree();
+    // initialise root
+    root = new fpNode;
 
     ifstream inputStream(inFile);
     if (inputStream.is_open()) {
@@ -163,7 +159,7 @@ bool fpTree::singlePrefixPath() {
     return true;
 }
 
-vector<item_set> getPowerSet(item_set transaction) {
+vector<item_set> getPowerSet(item_set &transaction) {
     
     vector<item_set> powerset;    
     if (transaction.size() == 1) {
