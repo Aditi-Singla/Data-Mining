@@ -13,3 +13,6 @@
 # Executables
 *.exe
 *.out
+
+# vim related
+*.sw*
