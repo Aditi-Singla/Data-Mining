@@ -10,7 +10,7 @@ class fpNode {
     public:
         int item;
         int count;      
-        fpNode* next;   // next item in the linked list
+        fpNode* next;                              // next item in the linked list
         fpNode* parent;
         std::unordered_map<int, fpNode*> children; // item to fpNode*
         fpNode();
@@ -26,8 +26,8 @@ class fpTree : public fiMiner {
         fpNode* root;
         fpTree(std::string &inFileName);
         fpTree(int rawSupportThreshold);
-        std::vector<item_set> getFrequentItemsets(double suppThold);
         std::vector<item_set> getFrequentItemsets();
+        std::vector<item_set> getFrequentItemsets(double suppThold);
         
     private:
         int numTransactions, rawSuppThold;
@@ -37,9 +37,9 @@ class fpTree : public fiMiner {
         struct sortByFrequency;
         bool singlePrefixPath();
         void firstPass(double suppThold);
+        void addTransaction(std::vector<int> &transaction, int count, bool priorityCheck);
         void buildFPTree();
         void fpGrowth();
-        void addTransaction(std::vector<int> &transaction, int count, bool priorityCheck);
         void printHeadPointers();
 
 };

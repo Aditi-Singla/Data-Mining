@@ -128,7 +128,6 @@ void fpTree::addTransaction(vector<int> &transaction, int count, bool priorityCh
 }
 
 void fpTree::buildFPTree() {
-
     // initialise root
     root = new fpNode;
 
@@ -149,7 +148,6 @@ void fpTree::buildFPTree() {
 }
 
 bool fpTree::singlePrefixPath() {
-    
     fpNode* curr = root;
     while (!curr->children.empty()) {
         if (curr->children.size() > 1)
@@ -160,7 +158,6 @@ bool fpTree::singlePrefixPath() {
 }
 
 vector<item_set> getPowerSet(item_set &transaction) {
-    
     vector<item_set> powerset;    
     if (transaction.size() == 1) {
         powerset.push_back(transaction);
@@ -206,10 +203,12 @@ void fpTree::fpGrowth() {
         return;
     }
     if (singlePrefixPath()) {
-        // Make all possible subsets and return them, since the infrequent items were pruned while construction of fpTree
+        /* Make all possible subsets and return them, since
+         the infrequent items were pruned while construction of fpTree
+        */
         item_set transaction;
-        // Root has a child, children not empty
         fpNode* curr = root;
+        // Root has a child, children not empty
         while (!curr->children.empty()) {
             curr = curr->children.begin()->second;
             if (curr->count < rawSuppThold)
@@ -236,8 +235,6 @@ void fpTree::fpGrowth() {
                 vector<int> transaction = node->getTransaction();
                 subTree->addTransaction(transaction, node->count, false);
             }
-            // printTree(subTree->root);
-            // subTree->printHeadPointers();
             subTree->fpGrowth();
             vector<item_set> freqItemsetsSubtree = subTree->getFrequentItemsets();
             for (auto& itemset : freqItemsetsSubtree) {
@@ -250,30 +247,19 @@ void fpTree::fpGrowth() {
 } 
 
 vector<item_set> fpTree::getFrequentItemsets() {
-
     return freqItemsets;
 }
 
 
 vector<item_set> fpTree::getFrequentItemsets(double suppThold) {
-
     // run the first pass - initialise priority map
     firstPass(suppThold);
 
     // build the FP Tree
     buildFPTree();
 
-    // for (auto it = headPointers.begin(); it != headPointers.end(); it++) {
-    //     cout << it->first << " : " << it->second->count << endl;
-    // }
-
-    // cout << rawSuppThold << endl;
-
-    // printTree(root);
-
     // run the fp tree growth
     fpGrowth();
 
-    sort(freqItemsets.begin(), freqItemsets.end());    
     return freqItemsets;
 }
