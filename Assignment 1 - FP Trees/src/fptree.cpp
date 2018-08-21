@@ -9,17 +9,17 @@ using namespace std;
     FP Node
 */
 fpNode::fpNode() : parent(NULL), next(NULL) {};
-fpNode::fpNode(int i, int c) : item(i), count(c), parent(NULL), next(NULL) {};
-fpNode::fpNode(int i, fpNode* p) : item(i), parent(p), next(NULL) {};
-fpNode::fpNode(int i, int c, fpNode* p) : item(i), count(c), parent(p), next(NULL) {};
+fpNode::fpNode(item i, int c) : Item(i), count(c), parent(NULL), next(NULL) {};
+fpNode::fpNode(item i, fpNode* p) : Item(i), parent(p), next(NULL) {};
+fpNode::fpNode(item i, int c, fpNode* p) : Item(i), count(c), parent(p), next(NULL) {};
 
-vector<int> fpNode::getTransaction() {
+vector<item> fpNode::getTransaction() {
     
-    vector<int> transaction;
+    vector<item> transaction;
     fpNode* curr = this;   
     while (curr->parent->parent != NULL) {
         curr = curr->parent;
-        transaction.push_back(curr->item);
+        transaction.push_back(curr->Item);
     }
     // TODO - better way to handle this?
     reverse(transaction.begin(), transaction.end());
@@ -45,7 +45,7 @@ void fpTree::firstPass(double suppThold) {
     if (inputStream.is_open()) {
         string line;
         while (getline(inputStream, line)) {
-            vector<int> transaction = parseLineVec(line);
+            vector<item> transaction = parseLineVec(line);
             for (auto it = transaction.begin(); it != transaction.end(); it++) {
                 priorityMap[*it] += 1;
             }
@@ -85,7 +85,7 @@ struct fpTree::sortByFrequency {
     }
 };
 
-void fpTree::addTransaction(vector<int> &transaction, int count, bool priorityCheck) {
+void fpTree::addTransaction(vector<item> &transaction, int count, bool priorityCheck) {
 
     fpNode* par = root;
     // build tree per transaction
@@ -136,7 +136,7 @@ void fpTree::buildFPTree() {
 
         string line;
         while (getline(inputStream, line)) {
-            vector<int> transaction = parseLineVec(line);
+            vector<item> transaction = parseLineVec(line);
             // sort according to frequency
             sort(transaction.begin(), transaction.end(), sortByFrequency(this));
 
@@ -157,34 +157,34 @@ bool fpTree::singlePrefixPath() {
     return true;
 }
 
-vector<item_set> getPowerSet(item_set &transaction) {
+vector<item_set> getPowerSet(item_set &itemset) {
     vector<item_set> powerset;    
-    if (transaction.size() == 1) {
-        powerset.push_back(transaction);
+    if (itemset.size() == 1) {
+        powerset.push_back(itemset);
     }
 
-    if (transaction.size() > 1) {
-        int item  = transaction[0];
-        item_set item1;
-        item1.push_back(item);
-        powerset.push_back(item1);
-        item_set sub(transaction.begin()+1,transaction.end());
+    if (itemset.size() > 1) {
+        item Item  = itemset[0];
+        item_set tempset;
+        tempset.push_back(Item);
+        powerset.push_back(tempset);
+        item_set sub(itemset.begin()+1,itemset.end());
         vector<item_set> powerset1 = getPowerSet(sub);
         
-        for (auto itemset : powerset1) {
-            powerset.push_back(itemset);
-            itemset.push_back(item);
-            sort(itemset.begin(),itemset.end());
-            powerset.push_back(itemset);
+        for (auto itemset1 : powerset1) {
+            powerset.push_back(itemset1);
+            itemset1.push_back(Item);
+            sort(itemset1.begin(),itemset1.end());
+            powerset.push_back(itemset1);
         }        
     }    
     return powerset; 
 }
 
 void printTree (fpNode* node) {
-    cout << node->item << " -> " << node->count << endl;
+    cout << node->Item << " -> " << node->count << endl;
     for (auto it = node->children.begin(); it != node->children.end(); it++){
-        cout << node->item << " : ";
+        cout << node->Item << " : ";
         printTree(it->second);
     }
 }
@@ -213,32 +213,32 @@ void fpTree::fpGrowth() {
             curr = curr->children.begin()->second;
             if (curr->count < rawSuppThold)
                 break;
-            transaction.push_back(curr->item);
+            transaction.push_back(curr->Item);
         }
         freqItemsets = getPowerSet(transaction);
     }
     else {
         // Multi Prefix Path, traverse over the pointer table and go on one by one
         for (auto it = headPointers.begin(); it != headPointers.end(); it++) {
-            int item = it->first;
+            item Item = it->first;
             fpNode* node = it->second;
             if (node->count < rawSuppThold) {
                 continue;
             }
-            freqItemsets.push_back(item_set{item});
+            freqItemsets.push_back(item_set{Item});
             fpTree* subTree = new fpTree(rawSuppThold);
             subTree->root = new fpNode;
             while (node->next != NULL) {
                 node = node->next;
                 int count = node->count;
                 // Get all the items from root to this item (excluding this item)
-                vector<int> transaction = node->getTransaction();
+                vector<item> transaction = node->getTransaction();
                 subTree->addTransaction(transaction, node->count, false);
             }
             subTree->fpGrowth();
             vector<item_set> freqItemsetsSubtree = subTree->getFrequentItemsets();
             for (auto& itemset : freqItemsetsSubtree) {
-                itemset.push_back(item);
+                itemset.push_back(Item);
                 sort(itemset.begin(), itemset.end());
             }
             freqItemsets.insert(freqItemsets.end(), freqItemsetsSubtree.begin(), freqItemsetsSubtree.end());

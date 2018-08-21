@@ -5,6 +5,9 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
+    // faster io
+    ios_base::sync_with_stdio(false);
+
     string inFile = argv[1];
     double suppThold = stod(argv[2]);
     string algorithm = argv[3];
@@ -24,17 +27,14 @@ int main(int argc, char **argv) {
         frequentItemsets = fiMiner.getFrequentItemsets(suppThold);
     }
 
-    cout << "Writing Results to : " << outFile << ".txt" << endl;
-    ofstream outputStream;
-    outputStream.open(outFile + ".txt");
+    // write to file
+    outFile += ".txt";
+    cout << "Writing Results to : " << outFile << endl;
+    FILE* outputStream = fopen(outFile.c_str(), "w");
     for (item_set freqItemset : frequentItemsets) {
-        // print_vec(freqItemset, outputStream);
-        for (int item : freqItemset) {
-            outputStream << item << ' ';
-        }
-        outputStream << endl;
+        printItemset(freqItemset, outputStream);
     }
-    outputStream.close();
+    fclose(outputStream);
 
     return 0;
 }

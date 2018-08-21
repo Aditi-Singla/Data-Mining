@@ -8,15 +8,15 @@
 
 class fpNode {
     public:
-        int item;
+        item Item;
         int count;      
         fpNode* next;                              // next item in the linked list
         fpNode* parent;
         std::unordered_map<int, fpNode*> children; // item to fpNode*
         fpNode();
-        fpNode(int i, int c);
-        fpNode(int i, fpNode* p);
-        fpNode(int i, int c, fpNode* p);
+        fpNode(item i, int c);
+        fpNode(item i, fpNode* p);
+        fpNode(item i, int c, fpNode* p);
         std::vector<int> getTransaction();
 };
 
@@ -31,13 +31,13 @@ class fpTree : public fiMiner {
         
     private:
         int numTransactions, rawSuppThold;
-        std::unordered_map<int, fpNode*> headPointers;
-        std::unordered_map<int, fpNode*> currPointers;
-        std::unordered_map<int, int> priorityMap;
+        std::unordered_map<item, fpNode*> headPointers;
+        std::unordered_map<item, fpNode*> currPointers;
+        std::unordered_map<item, int> priorityMap;
         struct sortByFrequency;
         bool singlePrefixPath();
         void firstPass(double suppThold);
-        void addTransaction(std::vector<int> &transaction, int count, bool priorityCheck);
+        void addTransaction(std::vector<item> &transaction, int count, bool priorityCheck);
         void buildFPTree();
         void fpGrowth();
         void printHeadPointers();

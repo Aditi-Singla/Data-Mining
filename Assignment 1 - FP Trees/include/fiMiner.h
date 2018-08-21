@@ -1,9 +1,7 @@
 #ifndef FIMINER_H
 #define FIMINER_H
 
-#include "Input.h"
-
-typedef std::vector<int> item_set;
+#include "io.h"
 
 class fiMiner {
 
