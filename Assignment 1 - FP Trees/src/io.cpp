@@ -21,6 +21,41 @@ bool parseLineVec(FILE* inFile, vector<item> &transaction) {
     return true;
 }
 
+bool parseLineVecInitial(FILE* inFile, unordered_map<item, int> &priorityMap) {
+    register int c = fgetc_unlocked(inFile);
+    if (c == EOF) {
+        return false;
+    }
+    while (c != '\n') {
+        int n = 0;
+        for (; (c > 47 && c < 58); c = fgetc_unlocked(inFile)) {
+            n = n * 10 + c - 48;
+        }
+        priorityMap[n] += 1;
+        c = fgetc_unlocked(inFile);
+    }
+    return true;
+}
+
+bool parseLineVecFiltered(FILE* inFile, vector<item> &transaction, 
+                        unordered_map<item, int> &priorityMap, int supportThreshold) {
+    register int c = fgetc_unlocked(inFile);
+    if (c == EOF) {
+        return false;
+    }
+    while (c != '\n') {
+        int n = 0;
+        for (; (c > 47 && c < 58); c = fgetc_unlocked(inFile)) {
+            n = n * 10 + c - 48;
+        }
+
+        if (priorityMap.find(n) != priorityMap.end())
+            transaction.emplace_back(n);
+        c = fgetc_unlocked(inFile);
+    }
+    return true;
+}
+
 bool parseLineSet(FILE* inFile, set<item> &transaction) {
     register int c = fgetc_unlocked(inFile);
     if (c == EOF) {

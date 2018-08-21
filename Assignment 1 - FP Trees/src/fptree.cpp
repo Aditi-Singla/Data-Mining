@@ -42,14 +42,10 @@ void fpTree::firstPass(double suppThold) {
 
     // first pass over db - get frequencies of items
     FILE* inputStream = fopen(inFile.c_str(), "r");
-    vector<item> transaction;
-    while (parseLineVec(inputStream, transaction)) {
-        for (auto it = transaction.begin(); it != transaction.end(); it++) {
-            priorityMap[*it] += 1;
-        }
+    
+    while (parseLineVecInitial(inputStream, priorityMap))
         numTransactions += 1;
-        transaction.clear();
-    }
+
     fclose(inputStream);
 
     // calculate frequent items and keep in priority map
@@ -128,25 +124,11 @@ void fpTree::buildFPTree() {
 
     FILE* inputStream = fopen(inFile.c_str(), "r");
     vector<item> transaction;
-    while (parseLineVec(inputStream, transaction)) {
-    	// Filter before sorting
-    	int txnSize = transaction.size();
-    	vector<item> filteredTransaction(txnSize, -1);
-
-    	int index = 0;
-
-    	for (int i = 0; i < txnSize; ++i) {
-    		if (priorityMap.find(transaction[i]) != priorityMap.end()) {
-    			filteredTransaction[index++] = transaction[i];
-    		}
-    	}
-
-    	filteredTransaction.resize(index);
-
-        // Sort according to frequency
-        sort(filteredTransaction.begin(), filteredTransaction.end(), sortByFrequency(this));
+    while (parseLineVecFiltered(inputStream, transaction, priorityMap, rawSuppThold)) {
+    	// Sort according to frequency
+        sort(transaction.begin(), transaction.end(), sortByFrequency(this));
         
-        addTransaction(filteredTransaction, 1, true);
+        addTransaction(transaction, 1, true);
         transaction.clear();
     }
     fclose(inputStream);
