@@ -77,44 +77,38 @@ struct fpTree::sortByFrequency {
     }
 };
 
-void fpTree::addTransaction(vector<item> &transaction, int count, bool priorityCheck) {
+void fpTree::addTransaction(vector<item> &transaction, int count) {
 
     fpNode* par = root;
     // build tree per transaction
     for (auto& item : transaction) {
-        // if priorityCheck is false, add all items else check if item is frequent
-        if (!priorityCheck || (priorityMap.find(item) != priorityMap.end())) {
-            fpNode* curr;
-            auto it = par->children.find(item);
+        fpNode* curr;
+        auto &childMap = par->children;
+        auto it = childMap.find(item);
 
-            if (it == par->children.end()) {
-                // new prefix - new node
-                curr = new fpNode(item, count, par);
-                par->children[item] = curr;
-                auto it1 = headPointers.find(item);
-                if (it1 == headPointers.end()) {
-                    headPointers[item] = new fpNode(item,count);
-                    currPointers[item] = headPointers[item];
-                }
-                else {
-                    headPointers[item]->count += count;
-                }
-                // update current pointers
-                currPointers[item]->next = curr;
-                currPointers[item] = curr;
-            } 
+        if (it == childMap.end()) {
+            // new prefix - new node
+            curr = new fpNode(item, count, par);
+            childMap[item] = curr;
+            auto it1 = headPointers.find(item);
+            if (it1 == headPointers.end()) {
+                headPointers[item] = new fpNode(item,count);
+                currPointers[item] = headPointers[item];
+            }
             else {
-                // prefix already in the tree
-                curr = it->second;
-                curr->count += count;
                 headPointers[item]->count += count;
             }
-            par = curr;
-        }
+            // update current pointers
+            currPointers[item]->next = curr;
+            currPointers[item] = curr;
+        } 
         else {
-            // all infrequent items - ignore afterwards
-            break;
+            // prefix already in the tree
+            curr = it->second;
+            curr->count += count;
+            headPointers[item]->count += count;
         }
+        par = curr;
     }
 }
 
@@ -128,7 +122,7 @@ void fpTree::buildFPTree() {
     	// Sort according to frequency
         sort(transaction.begin(), transaction.end(), sortByFrequency(this));
         
-        addTransaction(transaction, 1, true);
+        addTransaction(transaction, 1);
         transaction.clear();
     }
     fclose(inputStream);
@@ -221,7 +215,7 @@ void fpTree::fpGrowth() {
                 int count = node->count;
                 // Get all the items from root to this item (excluding this item)
                 vector<item> transaction = node->getTransaction();
-                subTree->addTransaction(transaction, node->count, false);
+                subTree->addTransaction(transaction, node->count);
             }
             subTree->fpGrowth();
             // TODO: Have a look at this

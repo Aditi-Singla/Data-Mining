@@ -37,11 +37,10 @@ class fpTree : public fiMiner {
         struct sortByFrequency;
         bool singlePrefixPath();
         void firstPass(double suppThold);
-        void addTransaction(std::vector<item> &transaction, int count, bool priorityCheck);
+        void addTransaction(std::vector<item> &transaction, int count);
         void buildFPTree();
         void fpGrowth();
         void printHeadPointers();
-
 };
 
 #endif
