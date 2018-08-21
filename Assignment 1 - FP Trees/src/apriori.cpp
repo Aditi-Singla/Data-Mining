@@ -14,19 +14,17 @@ void apriori::firstPass(double suppThold) {
     
     // first pass over the db - init k as 1
     k = 1;
-    ifstream inputStream(inFile);
-    if (inputStream.is_open()) {
-        string line;
-        while (getline(inputStream, line)) {
-            // TODO - fix 2 passes over each transaction, one to pass other to update count
-            vector<item> transaction = parseLineVec(line);
-            for (auto it = transaction.begin(); it != transaction.end(); it++) {
-                C_k[item_set{*it}] += 1;
-            }
-            numTransactions += 1;
+
+    FILE* inputStream = fopen(inFile.c_str(), "r");
+    vector<item> transaction;
+    while (parseLineVec(inputStream, transaction)) {
+        for (auto it = transaction.begin(); it != transaction.end(); it++) {
+            C_k[item_set{*it}] += 1;
         }
-        inputStream.close();
+        numTransactions += 1;
+        transaction.clear();
     }
+    fclose(inputStream);
 
     // calculate the frequent items and prune
     for (auto it = C_k.begin(); it != C_k.end(); it++) {
@@ -76,26 +74,26 @@ vector<item_set> apriori::getFrequentItemsets(double suppThold) {
     firstPass(suppThold);
 
     while (!F_k.empty()) {
-        // cout << k << endl;
+
         generateCandidates();
         k += 1;
+
         // calculate the support
-        ifstream inputStream(inFile);
-        if (inputStream.is_open()) {
-            string line;
-            while (getline(inputStream, line)) {
-                set<int> transaction = parseLine(line);
-                for (auto it = C_k.begin(); it != C_k.end(); it++) {
-                    item_set c = it->first;
-                    if (C_k[c] < rawSuppThold && includes(
-                        transaction.begin(), transaction.end(), 
-                        c.begin(), c.end())) {
-                        C_k[c] += 1;
-                    }
+        FILE* inputStream = fopen(inFile.c_str(), "r");
+        set<item> transaction;
+        while (parseLineSet(inputStream, transaction)) {
+            for (auto it = C_k.begin(); it != C_k.end(); it++) {
+                item_set c = it->first;
+                if (C_k[c] < rawSuppThold && includes(
+                    transaction.begin(), transaction.end(), 
+                    c.begin(), c.end())) {
+                    C_k[c] += 1;
                 }
             }
-            inputStream.close();
+            transaction.clear();
         }
+        fclose(inputStream);
+
         freqItemsets.insert(freqItemsets.end(), F_k.begin(), F_k.end());
 
         // prune to get frequent items

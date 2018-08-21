@@ -41,18 +41,16 @@ void fpTree::firstPass(double suppThold) {
     numTransactions = 0;
 
     // first pass over db - get frequencies of items
-    ifstream inputStream(inFile);
-    if (inputStream.is_open()) {
-        string line;
-        while (getline(inputStream, line)) {
-            vector<item> transaction = parseLineVec(line);
-            for (auto it = transaction.begin(); it != transaction.end(); it++) {
-                priorityMap[*it] += 1;
-            }
-            numTransactions += 1;
+    FILE* inputStream = fopen(inFile.c_str(), "r");
+    vector<item> transaction;
+    while (parseLineVec(inputStream, transaction)) {
+        for (auto it = transaction.begin(); it != transaction.end(); it++) {
+            priorityMap[*it] += 1;
         }
-        inputStream.close();
+        numTransactions += 1;
+        transaction.clear();
     }
+    fclose(inputStream);
 
     // calculate frequent items and keep in priority map
     for (auto it = priorityMap.begin(); it != priorityMap.end();) {
@@ -95,7 +93,6 @@ void fpTree::addTransaction(vector<item> &transaction, int count, bool priorityC
             fpNode* curr;
             auto it = par->children.find(item);
 
-
             if (it == par->children.end()) {
                 // new prefix - new node
                 curr = new fpNode(item, count, par);
@@ -131,20 +128,17 @@ void fpTree::buildFPTree() {
     // initialise root
     root = new fpNode;
 
-    ifstream inputStream(inFile);
-    if (inputStream.is_open()) {
-
-        string line;
-        while (getline(inputStream, line)) {
-            vector<item> transaction = parseLineVec(line);
-            // sort according to frequency
-            sort(transaction.begin(), transaction.end(), sortByFrequency(this));
-
-            addTransaction(transaction, 1, true);
-            
-        }
-        inputStream.close();
+    FILE* inputStream = fopen(inFile.c_str(), "r");
+    vector<item> transaction;
+    while (parseLineVec(inputStream, transaction)) {
+        // sort according to frequency
+        sort(transaction.begin(), transaction.end(), sortByFrequency(this));
+        
+        addTransaction(transaction, 1, true);
+        transaction.clear();
     }
+    fclose(inputStream);
+
 }
 
 bool fpTree::singlePrefixPath() {

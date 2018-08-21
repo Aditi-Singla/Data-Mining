@@ -2,22 +2,44 @@
 
 using namespace std;
 
+// reference - https://www.quora.com/What-is-the-fastest-output-method-in-C
+
 // Input
-set<item> parseLine(string &line) {
-    istringstream line_stream(line);
-    set<item> transaction(istream_iterator<item>{line_stream}, istream_iterator<item>());
-    return transaction;
+bool parseLineVec(FILE* inFile, vector<item> &transaction) {
+    register int c = fgetc_unlocked(inFile);
+    if (c == EOF) {
+        return false;
+    }
+    while (c != '\n') {
+        int n = 0;
+        for (; (c > 47 && c < 58); c = fgetc_unlocked(inFile)) {
+            n = n * 10 + c - 48;
+        }
+        transaction.push_back(n);
+        c = fgetc_unlocked(inFile);
+    }
+    return true;
 }
 
-vector<item> parseLineVec(string &line) {
-    istringstream line_stream(line);
-    vector<item> transaction(istream_iterator<item>{line_stream}, istream_iterator<item>());
-    return transaction;
+bool parseLineSet(FILE* inFile, set<item> &transaction) {
+    register int c = fgetc_unlocked(inFile);
+    if (c == EOF) {
+        return false;
+    }
+    while (c != '\n') {
+        int n = 0;
+        for (; (c > 47 && c < 58); c = fgetc_unlocked(inFile)) {
+            n = n * 10 + c - 48;
+        }
+        transaction.insert(n);
+        c = fgetc_unlocked(inFile);
+    }
+    return true;
 }
 
 
 // Output
-void printItem(item n, std::FILE* outFile) {
+void printItem(item &n, FILE* outFile) {
     // items are positive integers
     int i = 10;
     char output_buffer[10];
