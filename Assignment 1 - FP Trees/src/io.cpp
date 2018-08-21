@@ -15,7 +15,7 @@ bool parseLineVec(FILE* inFile, vector<item> &transaction) {
         for (; (c > 47 && c < 58); c = fgetc_unlocked(inFile)) {
             n = n * 10 + c - 48;
         }
-        transaction.push_back(n);
+        transaction.emplace_back(n);
         c = fgetc_unlocked(inFile);
     }
     return true;
