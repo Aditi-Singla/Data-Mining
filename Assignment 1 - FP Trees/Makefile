@@ -6,7 +6,7 @@ BUILD_TYPE = debug
 ifeq ($(BUILD_TYPE), debug)
 	CXXFLAGS += -g
 else
-	CXXFLAGS += -o3 -march=native
+	CXXFLAGS += -o3
 endif
 
 all : src/*.cpp

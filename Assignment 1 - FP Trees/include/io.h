@@ -1,5 +1,5 @@
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef IO_H
+#define IO_H
 
 #include <cstdio>
 #include <sstream>
