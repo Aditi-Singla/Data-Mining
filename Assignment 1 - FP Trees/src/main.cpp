@@ -27,9 +27,9 @@ int main(int argc, char **argv) {
         frequentItemsets = fiMiner.getFrequentItemsets(suppThold);
     }
 
+    cout << "Writing Results to : " << outFile << ".txt" << endl;
     // write to file
     outFile += ".txt";
-    cout << "Writing Results to : " << outFile << endl;
     FILE* outputStream = fopen(outFile.c_str(), "w");
     for (item_set freqItemset : frequentItemsets) {
         printItemset(freqItemset, outputStream);
