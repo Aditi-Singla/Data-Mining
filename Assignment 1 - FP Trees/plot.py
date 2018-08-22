@@ -24,7 +24,9 @@ def getTimes(input, supports=[1, 5, 10, 25, 50, 90]):
     return apTimes, fpTimes
 
 
-def plot(apTimes, fpTimes, supports):
+def plot(apTimes, fpTimes, supports, scale='normal'):
+    if scale == 'log':
+        plt.yscale('log')
     plt.plot(supports, apTimes, label='A Priori')
     plt.plot(supports, fpTimes, label='FP-Tree')
     plt.title('Execution time vs support threshold for a-priori and fp-tree')
@@ -37,6 +39,9 @@ def Run(args):
     apTimes, fpTimes = getTimes(args['inputFile'], args['supports'])
     plot(apTimes, fpTimes, args['supports'])
     plt.show()
+    plot(apTimes, fpTimes, args['supports'], 'log')
+    plt.show()
+
 
 
 if __name__ == '__main__':
