@@ -37,6 +37,8 @@ def plot(apTimes, fpTimes, supports, scale='normal'):
 
 def Run(args):
     apTimes, fpTimes = getTimes(args['inputFile'], args['supports'])
+    print 'A priori', apTimes
+    print 'FP-tree', fpTimes
     plot(apTimes, fpTimes, args['supports'])
     plt.show()
     plot(apTimes, fpTimes, args['supports'], 'log')
