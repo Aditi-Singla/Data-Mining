@@ -1,7 +1,7 @@
 CC = g++
 CXXFLAGS = -std=c++11 -I include/
 
-BUILD_TYPE = debug
+BUILD_TYPE = test
 
 ifeq ($(BUILD_TYPE), debug)
 	CXXFLAGS += -g

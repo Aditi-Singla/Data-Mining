@@ -13,9 +13,9 @@ int main(int argc, char **argv) {
     string algorithm = argv[3];
     string outFile = argv[4];
 
-    cout << "Input file : " << inFile << endl;
-    cout << "Support Threshold : " << suppThold << endl;
-    cout << "Algorithm : " << algorithm << endl;
+    // cout << "Input file : " << inFile << endl;
+    // cout << "Support Threshold : " << suppThold << endl;
+    // cout << "Algorithm : " << algorithm << endl;
 
     std::vector<item_set> frequentItemsets;
     if (algorithm == "-apriori") {
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
         frequentItemsets = fiMiner.getFrequentItemsets(suppThold);
     }
 
-    cout << "Writing Results to : " << outFile << ".txt" << endl;
+    // cout << "Writing Results to : " << outFile << ".txt" << endl;
     // write to file
     outFile += ".txt";
     FILE* outputStream = fopen(outFile.c_str(), "w");
