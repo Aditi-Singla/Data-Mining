@@ -5,7 +5,6 @@
 | 2014CS50277  | 2014CS50279   | 2014CS50297    |
 
 
-
 #### Project Structure
 
 * C++ code - *include/* (headers) and *src/*
@@ -16,7 +15,7 @@
 * Makefile
 * Scripts - 
   * *compile.sh*
-  * *2014CS50277.sh* - as specified in the statement
+  * *run.sh* - as specified in the statement
   * *plot.py* - plotting time taken vs support threshold
 
 
@@ -26,19 +25,19 @@
 1. To compile -
 
    ```bash
-   ./compile.sh
+   ./run.sh
    ```
 
 2. To run - 
 
    ```bash
-   ./2014CS50277_2014CS50279_2014CS50297.sh <input-dataset> <support-threshold> <algorithm> <output-file>
+   ./run.sh <input-dataset> <support-threshold> <algorithm> <output-file>
    ```
 
 3. To compare performance - 
 
    ```bash
-   ./2014CS50277_2014CS50279_2014CS50297.sh <input-dataset> -plot
+   ./run.sh <input-dataset> -plot
    ```
 
 
