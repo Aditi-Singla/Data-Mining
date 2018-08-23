@@ -16,3 +16,6 @@
 
 # vim related
 *.sw*
+
+# Folders
+temp/
