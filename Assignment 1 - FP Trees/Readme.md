@@ -1,5 +1,11 @@
 ## COL 761 - Assignment 1
 
+| Aditi Singla | Ankush Phulia | Vaibhav Bhagee |
+| ------------ | ------------- | -------------- |
+| 2014CS50277  | 2014CS50279   | 2014CS50297    |
+
+
+
 #### Project Structure
 
 * C++ code - *include/* (headers) and *src/*
@@ -10,7 +16,7 @@
 * Makefile
 * Scripts - 
   * *compile.sh*
-  * *2014CS50277_2014CS50279_2014CS50297.sh* - as specified in the statement
+  * *2014CS50277.sh* - as specified in the statement
   * *plot.py* - plotting time taken vs support threshold
 
 
@@ -52,4 +58,6 @@
 
 ![log](graphs/log.png)
 
-Clearly the running time for a priori rises exponentially as the support threshold is reduced, whereas for fp-tree the running time is more or less linearly increasing. 
+Clearly the running time for a priori rises exponentially as the support threshold is reduced, whereas for fp-tree the running time is more or less linearly increasing. This difference can be attributed to the fact that
+
+* At lower support thresholds, there is a greater chance to get *larger* frequent item sets. In case of a priori, this means that the database will be read a proportionate number of times, as opposed to a constant two for fp-tree, leading to greater increase in time for the former
