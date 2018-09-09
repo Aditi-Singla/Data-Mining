@@ -1,0 +1,4 @@
+cluster
+*.txt
+callgrind*
+submission/
