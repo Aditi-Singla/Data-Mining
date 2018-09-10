@@ -25,19 +25,19 @@
 1. To compile -
 
    ```bash
-   ./run.sh
+   ./scripts/compile.sh
    ```
 
 2. To run - 
 
    ```bash
-   ./run.sh <input-dataset> <support-threshold> <algorithm> <output-file>
+   ./scripts/run.sh <input-data> <support-threshold> <algorithm> <output-file>
    ```
 
 3. To compare performance - 
 
    ```bash
-   ./run.sh <input-dataset> -plot
+   ./scripts/run.sh <input-data> -plot
    ```
 
 

@@ -13,21 +13,28 @@
 * Makefile
 * Scripts - 
   * *compile.sh*
-  * *run.sh* - as specified in the statement
-
-
+  * *run.sh*
 
 #### Running the code
 
 1. To compile -
 
    ```bash
-   ./run.sh
+   ./scripts/compile.sh
    ```
 
 2. To run - 
 
-   ```bash
-   ./run.sh 
-   ```
+3. * k-means
+
+     ```bash
+     ./scripts/run.sh <input file> -kmeans <k>
+     ```
+
+   * dbscan/optics
+
+     ```bash
+     ./scripts/run.sh <input file> <-dbscan/-optics> <minPts> <epsilon>
+     ```
+
 
