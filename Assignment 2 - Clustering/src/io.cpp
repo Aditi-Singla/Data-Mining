@@ -1,15 +1,17 @@
 #include "io.h"
 
+#include <iostream>
+
 using namespace std;
 
 // Input - TODO - modify to read doubles
-bool parseLine(FILE* inFile, point &pt) {
+bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
     register int c = fgetc_unlocked(inFile);
     if (c == EOF) {
         return false;
     }
 
-    int n = 0;
+    int n = 0, i = 0;
     bool done = false;
 
     while (c != '\n') {
@@ -18,14 +20,27 @@ bool parseLine(FILE* inFile, point &pt) {
             n = (n << 3) + (n << 1) + c - 48;
         } 
         else if (!done) {
-            pt.attributes.emplace_back(n);
+            if (!size) {
+                attributes.emplace_back(n);
+            }
+            else {
+                attributes[i++] = n;
+            }
             n = 0;
             done = true;
         }
-
         c = fgetc_unlocked(inFile);
     }
     return true;
+}
+
+void readData(FILE* inFile, vector<point> &data) {
+    vector<double> attributes;
+    int i = 0, l = 0;
+    while (parseLine(inFile, attributes, attributes.size())) {
+        data.push_back(point(i++, l++, attributes));
+    }
+    fclose(inFile);
 }
 
 

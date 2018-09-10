@@ -2,14 +2,10 @@
 
 using namespace std;
 
-kmeans::kmeans(string &inFileName) {
+kmeans::kmeans(std::vector<point> &data) {
 
 }
 
-void kmeans::setParams(int k) {
-    this->k = k;
-}
-
-unordered_map<cId, vector<pId>> kmeans::getClusters() {
+unordered_map<cId, vector<pId>> kmeans::getClusters(int k) {
     return clusters;
 }

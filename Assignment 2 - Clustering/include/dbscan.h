@@ -7,9 +7,8 @@ class dbscan : public clustering {
 
     public :
         dbscan() {}
-        dbscan(std::string &inFileName);
-        void setParams(int minPts, double eps);
-        std::unordered_map<cId, std::vector<pId>> getClusters();
+        dbscan(std::vector<point> &data);
+        std::unordered_map<cId, std::vector<pId>> getClusters(int minPts, double eps);
 
     private : 
         int minPts;

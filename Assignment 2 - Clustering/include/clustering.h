@@ -13,7 +13,10 @@ class clustering {
         std::unordered_map<cId, std::vector<pId>> clusters;
 
         clustering() {}
-        virtual std::unordered_map<cId, std::vector<pId>> getClusters() = 0;
+        virtual std::unordered_map<cId, std::vector<pId>> getClusters() {}
+
+    private:
+        std::vector<point> points;
 };
 
 #endif

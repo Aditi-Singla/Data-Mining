@@ -2,15 +2,10 @@
 
 using namespace std;
 
-optics::optics(std::string &inFileName) {
+optics::optics(std::vector<point> &data) {
 
 }
 
-void optics::setParams(int minPts, double eps) {
-    this->minPts = minPts;
-    this->eps = eps;
-}
-
-unordered_map<cId, vector<pId>> optics::getClusters() {
+unordered_map<cId, vector<pId>> optics::getClusters(int minPts, double eps) {
     return clusters;
 }

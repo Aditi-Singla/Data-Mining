@@ -10,7 +10,7 @@
 #include "clustering.h"
 
 // Input
-bool parseLine(std::FILE* inFile, point &pt);
+void readData(std::FILE* inFile, std::vector<point> &data);
 
 // Output
 void printCluster(cId clusterID, std::vector<pId> &pointIDs, std::FILE* outFile);

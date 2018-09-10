@@ -2,15 +2,10 @@
 
 using namespace std;
 
-dbscan::dbscan(string &inFileName) {
+dbscan::dbscan(std::vector<point> &data) {
 
 }
 
-void dbscan::setParams(int minPts, double eps) {
-    this->minPts = minPts;
-    this->eps = eps;
-}
-
-unordered_map<cId, vector<pId>> dbscan::getClusters() {
+unordered_map<cId, vector<pId>> dbscan::getClusters(int minPts, double eps) {
     return clusters;
 }

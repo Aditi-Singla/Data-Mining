@@ -7,9 +7,8 @@ class optics : public clustering {
 
     public :
         optics() {}
-        optics(std::string &inFileName);
-        void setParams(int minPts, double eps);
-        std::unordered_map<cId, std::vector<pId>> getClusters();
+        optics(std::vector<point> &data);
+        std::unordered_map<cId, std::vector<pId>> getClusters(int minPts, double eps);
 
     private:
         int minPts;
