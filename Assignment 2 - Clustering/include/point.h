@@ -9,12 +9,10 @@ class point {
 
     public :
         pId id;
-        int lineNo;
         std::vector<double> attributes;
 
         point() {}
         point(int i, std::vector<double> &a);
-        point(int i, int l, std::vector<double> &a);
 };
 
 #endif

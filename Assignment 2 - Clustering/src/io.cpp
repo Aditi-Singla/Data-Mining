@@ -51,7 +51,7 @@ void readData(FILE* inFile, vector<point> &data) {
     vector<double> attributes;
     int i = 0, l = 0;
     while (parseLine(inFile, attributes, attributes.size())) {
-        data.push_back(point(i++, l++, attributes));
+        data.push_back(point(i++, attributes));
     }
     fclose(inFile);
 }
@@ -70,22 +70,33 @@ void printInt(int n, FILE* outFile) {
     } while(++i < 10);
 }
 
+// TODO - make it efficient
+void printDouble(double n, FILE* outFile) {
+    fprintf(outFile, "%f\n", n);
+}
+
 void printCID(cId clusterID, FILE* outFile) {
     fputc_unlocked('#', outFile);
     printInt(clusterID, outFile);
     fputc_unlocked('\n', outFile);
 }
 
-void printPID(pId pointID, int lineNo, FILE* outFile) {
+void printPID(pId pointID, FILE* outFile) {
     printInt(pointID, outFile);
-    fputc_unlocked(' ', outFile);
-    printInt(lineNo, outFile);
     fputc_unlocked('\n', outFile);
 }
 
-void printCluster(cId clusterID, std::vector<pId> &pointIDs, std::FILE* outFile) {
+void printCluster(cId clusterID, vector<pId> &pointIDs, FILE* outFile) {
     printCID(clusterID, outFile);
-    for (auto pointID : pointIDs) {
-        printPID(pointID, pointID, outFile);
+    for (pId pointID : pointIDs) {
+        printPID(pointID, outFile);
+    }
+}
+
+void printVector(vector<double> &yValues, FILE* outFile) {
+    for (int i = 0; i < yValues.size(); i++) {
+        printInt(i, outFile);
+        fputc_unlocked(' ', outFile);
+        printDouble(i, outFile);
     }
 }

@@ -14,5 +14,6 @@ void readData(std::FILE* inFile, std::vector<point> &data);
 
 // Output
 void printCluster(cId clusterID, std::vector<pId> &pointIDs, std::FILE* outFile);
+void printVector(std::vector<double> &yValues, std::FILE* outFile);
 
 #endif
