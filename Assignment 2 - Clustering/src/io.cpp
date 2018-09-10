@@ -4,22 +4,33 @@
 
 using namespace std;
 
-// Input - TODO - modify to read doubles
+// Input
 bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
     register int c = fgetc_unlocked(inFile);
     if (c == EOF) {
         return false;
     }
 
-    int n = 0, i = 0;
+    double n = 0, k = 1;
+    int i = 0, sign = 1;
     bool done = false;
 
     while (c != '\n') {
         if (c > 47 && c < 58) {
             done = false;
-            n = (n << 3) + (n << 1) + c - 48;
-        } 
+            n = (10 * n + c - 48) * k;
+            if (k != 1) {
+                k *= 0.1;
+            }
+        }
+        else if (c == '.') {
+            k = 0.1;
+        }
+        else if (c == '-') {
+            sign = -1;
+        }
         else if (!done) {
+            n *= sign;
             if (!size) {
                 attributes.emplace_back(n);
             }
@@ -28,6 +39,8 @@ bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
             }
             n = 0;
             done = true;
+            k = 1;
+            sign = 1;
         }
         c = fgetc_unlocked(inFile);
     }
