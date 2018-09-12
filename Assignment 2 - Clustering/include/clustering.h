@@ -11,7 +11,7 @@ typedef int cId;
 class clustering {
 
     public :
-        std::vector<point> points;
+        std::vector<point> *points;
         std::unordered_map<cId, std::vector<pId>> clusters;
 
         clustering() {}

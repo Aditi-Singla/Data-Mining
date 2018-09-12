@@ -2,9 +2,9 @@
 
 using namespace std;
 
-optics::optics(std::vector<point> *data) {
-    points = *data;
-    assignments.resize(points.size());
+optics::optics(std::vector<point> &data) {
+    points = &data;
+    assignments.resize(points->size());
     fill(assignments.begin() , assignments.end(), -1);
 }
 

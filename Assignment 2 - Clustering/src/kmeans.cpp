@@ -2,9 +2,9 @@
 
 using namespace std;
 
-kmeans::kmeans(std::vector<point> *data) {
-    points = *data;
-    assignments.resize(points.size());
+kmeans::kmeans(std::vector<point> &data) {
+    points = &data;
+    assignments.resize(points->size());
     fill(assignments.begin() , assignments.end(), -1);
 }
 

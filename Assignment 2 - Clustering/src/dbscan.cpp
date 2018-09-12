@@ -2,9 +2,9 @@
 
 using namespace std;
 
-dbscan::dbscan(std::vector<point> *data) {
-    points = *data;
-    assignments.resize(points.size());
+dbscan::dbscan(std::vector<point> &data) {
+    points = &data;
+    assignments.resize(points->size());
     fill(assignments.begin() , assignments.end(), -1);
 }
 

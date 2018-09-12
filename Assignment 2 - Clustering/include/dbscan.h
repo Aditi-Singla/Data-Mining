@@ -9,7 +9,7 @@ class dbscan : private clustering {
 
     public :
         dbscan() {}
-        dbscan(std::vector<point> *data);
+        dbscan(std::vector<point> &data);
         std::unordered_map<cId, std::vector<pId>> getClusters(int minPts, double eps);
 
     private : 

@@ -7,7 +7,7 @@ class kmeans : private clustering {
 
     public :
         kmeans() {}
-        kmeans(std::vector<point> *data);
+        kmeans(std::vector<point> &data);
         std::unordered_map<cId, std::vector<pId>> getClusters(int k);
 
     private:
