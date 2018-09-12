@@ -4,19 +4,21 @@
 #include <unordered_map>
 
 #include "point.h"
+#include "util.h"
 
 typedef int cId;
 
 class clustering {
 
     public :
+        std::vector<point> points;
         std::unordered_map<cId, std::vector<pId>> clusters;
 
         clustering() {}
         virtual std::unordered_map<cId, std::vector<pId>> getClusters() {}
 
-    private:
-        std::vector<point> points;
+    protected:
+        std::vector<cId> assignments;
 };
 
 #endif

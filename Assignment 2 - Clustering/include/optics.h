@@ -4,11 +4,11 @@
 #include "io.h"
 #include "clustering.h"
 
-class optics : public clustering {
+class optics : private clustering {
 
     public :
         optics() {}
-        optics(std::vector<point> &data);
+        optics(std::vector<point> *data);
         std::unordered_map<cId, std::vector<pId>> getClusters(int minPts, double eps);
 
     private:

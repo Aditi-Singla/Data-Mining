@@ -25,19 +25,19 @@ int main(int argc, char **argv) {
     unordered_map<cId, vector<pId>> clusters;
     if (algorithm == "kmeans") {
         int k = stoi(argv[3]);
-        kmeans clusterer(data);
+        kmeans clusterer(&data);
         clusters = clusterer.getClusters(k);
     }
     else if (algorithm == "dbscan") {
         int minPts = stoi(argv[3]);
         double eps = stod(argv[4]);
-        dbscan clusterer(data);
+        dbscan clusterer(&data);
         clusters = clusterer.getClusters(minPts, eps);
     }
     else if (algorithm == "optics") {
         int minPts = stoi(argv[3]);
         double eps = stod(argv[4]);
-        optics clusterer(data);
+        optics clusterer(&data);
         clusters = clusterer.getClusters(minPts, eps);
      }
 
@@ -49,6 +49,15 @@ int main(int argc, char **argv) {
         printCluster(it->first, it->second, outputStream);
     }
     fclose(outputStream);
+
+    point p1 = data[0];
+    for (point &p : data) {
+        for (double d : p.attributes) {
+            cout << d << ' ';
+        }
+        cout << distance(p, p1);
+        cout << endl;
+    }
 
     return 0;
 }
