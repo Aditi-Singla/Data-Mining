@@ -12,7 +12,7 @@ class optics : private clustering {
         void getReachability(int minPts, double maxEps);
         std::vector<cId> getClusters(int minPts, double maxEps);
 
-    private:
+    private :
         std::vector<double> reachabilityDistances;
 
         void writeReachabilityFile(std::string &tempFileName);

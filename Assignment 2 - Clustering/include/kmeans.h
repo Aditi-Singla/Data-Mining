@@ -2,6 +2,7 @@
 #define KMEANS_H
 
 #include "clustering.h"
+#include <algorithm>
 
 class kmeans : private clustering {
 

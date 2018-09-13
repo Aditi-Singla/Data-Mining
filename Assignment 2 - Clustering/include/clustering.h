@@ -17,7 +17,7 @@ class clustering {
         void readPointData(std::string &inFile);
         virtual std::vector<cId> getClusters() {}
 
-    protected:
+    protected :
         std::string inFile;
 };
 
