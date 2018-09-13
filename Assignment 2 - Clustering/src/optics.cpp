@@ -2,18 +2,21 @@
 
 using namespace std;
 
-optics::optics(std::vector<point> &data) {
-    points = &data;
-    assignments.resize(points->size());
-    fill(assignments.begin() , assignments.end(), -1);
+optics::optics(string &inFileName) {
+    inFile = inFileName;
+    readPointData(inFile);
 }
 
-void optics::writeReachabilityFile(string tempFile) {
-    FILE* outputStream = fopen(tempFile.c_str(), "w");
+void optics::getReachability(int minPts, double maxEps) {
+
+}
+
+vector<cId> optics::getClusters(int minPts, double maxEps) {
+    return clusterAssmts;
+}
+
+void optics::writeReachabilityFile(string &tempFileName) {
+    FILE* outputStream = fopen(tempFileName.c_str(), "w");
     printVector(reachabilityDistances, outputStream);
     fclose(outputStream);
-}
-
-unordered_map<cId, vector<pId>> optics::getClusters(int minPts, double eps) {
-    return clusters;
 }

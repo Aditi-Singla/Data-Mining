@@ -1,24 +1,24 @@
 #ifndef CLUSTERING_H
 #define CLUSTERING_H
 
-#include <unordered_map>
+#include <string>
 
 #include "point.h"
+#include "io.h"
 #include "util.h"
-
-typedef int cId;
 
 class clustering {
 
     public :
-        std::vector<point> *points;
-        std::unordered_map<cId, std::vector<pId>> clusters;
+        std::vector<point> points;
+        std::vector<cId> clusterAssmts;
 
         clustering() {}
-        virtual std::unordered_map<cId, std::vector<pId>> getClusters() {}
+        void readPointData(std::string &inFile);
+        virtual std::vector<cId> getClusters() {}
 
     protected:
-        std::vector<cId> assignments;
+        std::string inFile;
 };
 
 #endif

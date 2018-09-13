@@ -1,13 +1,11 @@
 #ifndef IO_H
 #define IO_H
 
-#include <cstdio>
-#include <fstream>
 #include <vector>
-#include <unordered_map>
+#include <cstdio>
 
 #include "point.h"
-#include "clustering.h"
+#include "util.h"
 
 // Input
 void readData(std::FILE* inFile, std::vector<point> &data);

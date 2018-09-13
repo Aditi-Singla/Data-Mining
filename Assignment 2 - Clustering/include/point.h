@@ -4,6 +4,7 @@
 #include <vector>
 
 typedef int pId;
+typedef int cId;
 
 class point {
 

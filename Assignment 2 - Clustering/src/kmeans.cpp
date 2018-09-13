@@ -2,12 +2,12 @@
 
 using namespace std;
 
-kmeans::kmeans(std::vector<point> &data) {
-    points = &data;
-    assignments.resize(points->size());
-    fill(assignments.begin() , assignments.end(), -1);
+kmeans::kmeans(string &inFileName) {
+    inFile = inFileName;
+    readPointData(inFile);
 }
 
-unordered_map<cId, vector<pId>> kmeans::getClusters(int k) {
-    return clusters;
+vector<cId> kmeans::getClusters(int k) {
+
+    return clusterAssmts;
 }

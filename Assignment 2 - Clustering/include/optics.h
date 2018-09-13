@@ -8,15 +8,15 @@ class optics : private clustering {
 
     public :
         optics() {}
-        optics(std::vector<point> &data);
-        std::unordered_map<cId, std::vector<pId>> getClusters(int minPts, double eps);
+        optics(std::string &inFileName);
+        void getReachability(int minPts, double maxEps);
+        std::vector<cId> getClusters(int minPts, double maxEps);
 
     private:
-        int minPts;
-        double eps;
         std::vector<double> reachabilityDistances;
 
-        void writeReachabilityFile(std::string tempFile);
+        void writeReachabilityFile(std::string &tempFileName);
+
 };
 
 #endif
