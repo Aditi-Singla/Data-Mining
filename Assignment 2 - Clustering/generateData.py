@@ -6,6 +6,7 @@ from collections import defaultdict
 from matplotlib import pyplot as plt
 from sklearn import datasets, cluster
 
+Dataset, Dataset_name = None, None
 
 def getParser():
     parser = argparse.ArgumentParser(
@@ -17,6 +18,12 @@ def getParser():
     parser.add_argument('numTries', type=int,
                         help='Number of different random seeds')
     return parser
+
+
+def saveData(event):
+    if event.key == 'w':
+        np.savetxt(Dataset_name + '.txt', Dataset, delimiter=' ')
+    plt.close(event.canvas.figure)
 
 
 def clusterPoints(X, n, mode='kmeans'):
@@ -45,12 +52,18 @@ def generate(numSamples, numClusters, seed):
     std_dev = [0.25 + 0.25 * i * i for i in xrange(1, numClusters + 1)]
     X, y = datasets.make_blobs(
         n_samples=numSamples, centers=numClusters, cluster_std=std_dev, random_state=seed)
-    # kmeansClusters = clusterPoints(X, numClusters, 'kmeans')
-    # plotClusters(kmeansClusters, 'kmeans')
+
+    cid = plt.gcf().canvas.mpl_connect('key_press_event', saveData)
+    global Dataset, Dataset_name
+    Dataset = X
+    Dataset_name = '{}-{}-{}'.format(numSamples, numClusters, seed)
+
+    kmeansClusters = clusterPoints(X, numClusters, 'kmeans')
+    plotClusters(kmeansClusters, 'kmeans')
     dbscanClusters = clusterPoints(X, 0.04, 'dbscan')
     plotClusters(dbscanClusters, 'dbscan')
-    opticsClusters = clusterPoints(X, -1, 'optics')
-    plotClusters(opticsClusters, 'optics')
+    # opticsClusters = clusterPoints(X, -1, 'optics')
+    # plotClusters(opticsClusters, 'optics')
 
 
 def Run(args):

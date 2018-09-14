@@ -75,7 +75,12 @@ void printDouble(double n, FILE* outFile) {
 
 void printCID(cId clusterID, FILE* outFile) {
     fputc_unlocked('#', outFile);
-    printInt(clusterID, outFile);
+    if (clusterID >= 0) {
+        printInt(clusterID, outFile);
+    }
+    else {
+        fputs_unlocked("outlier", outFile);
+    }
     fputc_unlocked('\n', outFile);
 }
 
