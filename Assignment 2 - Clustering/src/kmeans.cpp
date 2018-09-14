@@ -42,12 +42,17 @@ vector<cId> kmeans::getClusters(int k) {
                 if (minDistance < 0 || dist < minDistance) {
                     minDistance = dist;
                     cluster = i;
-                    cont = true;
                 }
             }
-            clusterAssmts[j] = cluster;
+            if (clusterAssmts[j] != cluster){
+                clusterAssmts[j] = cluster;
+                cont = true;
+            }
             auto &sum = sumCluster[cluster];
-            transform(sum.begin(), sum.end(), point.begin(), sum.begin(), std::plus<double>());
+            for (int i = 0; i < dimension; i++){
+                sum[i] += point[i];
+            }
+            // transform(sum.begin(), sum.end(), point.begin(), sum.begin(), std::plus<double>());
             countCluster[cluster]++;
         }
 
@@ -55,7 +60,7 @@ vector<cId> kmeans::getClusters(int k) {
         for (int i = 0; i < k; i++) {
             centroids[i] = sumCluster[i];
             for (auto &c: centroids[i])
-                c /= countCluster[cluster];
+                c /= countCluster[i];
         }
 
         if (!cont) break;

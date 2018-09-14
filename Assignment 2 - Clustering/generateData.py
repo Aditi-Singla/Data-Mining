@@ -23,7 +23,7 @@ def getParser():
 
 def saveData(event):
     if event.key == 'w':
-        np.savetxt(Dataset_name + '.txt', Dataset, fmt='%0.10f', delimiter=' ')
+        np.savetxt(Dataset_name + '.txt', Dataset, fmt='%0.10f ', delimiter=' ')
     plt.close(event.canvas.figure)
 
 

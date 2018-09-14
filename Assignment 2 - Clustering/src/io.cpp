@@ -16,7 +16,7 @@ bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
     while (c != '\n') {
         if (c > 47 && c < 58) {
             done = false;
-            n = (10 * n + c - 48) * k;
+            n = (10 * n + c - 48);
             if (k != 1) {
                 k *= 0.1;
             }
@@ -29,6 +29,7 @@ bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
         }
         else if (!done) {
             n *= sign;
+            n *= k;
             if (!size) {
                 attributes.emplace_back(n);
             }
