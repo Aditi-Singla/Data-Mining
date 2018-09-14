@@ -6,7 +6,7 @@ using namespace std;
 
 kmeans::kmeans(string &inFileName) {
     inFile = inFileName;
-    readPointData(inFile);
+    readData(inFile);
 }
 
 vector<cId> kmeans::getClusters(int k) {

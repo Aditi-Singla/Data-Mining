@@ -45,16 +45,6 @@ bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
     return true;
 }
 
-void readData(FILE* inFile, vector<point> &data) {
-    vector<double> attributes;
-    int i = 0, l = 0;
-    while (parseLine(inFile, attributes, attributes.size())) {
-        data.push_back(point(i++, attributes));
-    }
-    fclose(inFile);
-}
-
-
 // Output
 void printInt(int n, FILE* outFile) {
     int i = 10;
