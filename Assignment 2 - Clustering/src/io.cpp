@@ -29,6 +29,7 @@ bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
         }
         else if (!done) {
             n *= sign;
+            k = (k == 1)?k:10*k;
             n *= k;
             if (!size) {
                 attributes.emplace_back(n);
