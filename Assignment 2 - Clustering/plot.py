@@ -28,7 +28,7 @@ def readClusterData(inputFile):
         clusters = defaultdict(list)
         currCluster = 0
         for line in lines:
-            if line.startswith('#outliers'):
+            if line.startswith('#outlier'):
                 currCluster = -1
             elif line.startswith('#'):
                 currCluster = int(line[1:])

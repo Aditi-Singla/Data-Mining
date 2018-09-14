@@ -28,13 +28,13 @@
 3. * k-means
 
      ```bash
-     ./scripts/run.sh <input file> -kmeans <k>
+     ./scripts/run.sh -kmeans <k> <input file>
      ```
 
    * dbscan/optics
 
      ```bash
-     ./scripts/run.sh <input file> <-dbscan/-optics> <minPts> <epsilon>
+     ./scripts/run.sh -<dbscan/optics> -<minPts> <epsilon> <input file> 
      ```
 
 

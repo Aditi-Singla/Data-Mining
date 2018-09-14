@@ -28,7 +28,7 @@ def printAssignments():
             if (i >= 0):
                 outFile.write('#{}\n'.format(i))
             else:
-                outFile.write('#outliers\n')
+                outFile.write('#outlier\n')
             outFile.write('{}\n'.format('\n'.join(map(str, points))))
 
 
