@@ -8,6 +8,7 @@ from sklearn import datasets, cluster
 
 Dataset, Dataset_name = None, None
 
+
 def getParser():
     parser = argparse.ArgumentParser(
         description='Generate dataset and check the clusters')
@@ -22,7 +23,7 @@ def getParser():
 
 def saveData(event):
     if event.key == 'w':
-        np.savetxt(Dataset_name + '.txt', Dataset, delimiter=' ')
+        np.savetxt(Dataset_name + '.txt', Dataset, fmt='%0.10f', delimiter=' ')
     plt.close(event.canvas.figure)
 
 
@@ -56,7 +57,7 @@ def generate(numSamples, numClusters, seed):
     cid = plt.gcf().canvas.mpl_connect('key_press_event', saveData)
     global Dataset, Dataset_name
     Dataset = X
-    Dataset_name = '{}-{}-{}'.format(numSamples, numClusters, seed)
+    Dataset_name = 'data/{}-{}-{}'.format(numSamples, numClusters, seed)
 
     kmeansClusters = clusterPoints(X, numClusters, 'kmeans')
     plotClusters(kmeansClusters, 'kmeans')

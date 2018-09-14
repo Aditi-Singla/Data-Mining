@@ -8,7 +8,7 @@ from collections import defaultdict
 def getParser():
     parser = argparse.ArgumentParser(
         description='Plot the points and view clusters')
-    parser.add_argument('rawData', help='Input database of points')
+    parser.add_argument('--input', help='Input database of points')
     parser.add_argument('--clusters', nargs='*',
                         help='Output files containing clusters')
     parser.add_argument('--reachability',
@@ -48,16 +48,16 @@ def plotClusters(clusters, X, Y):
         for pointID in pointIDs:
             x.append(X[pointID])
             y.append(Y[pointID])
-        plt.plot(x, y, 'o', label='Cluster {}'.format(clusterID))
+        plt.plot(x, y, 'o', label='Cluster {}'.format(clusterID), markersize=0.5)
     plt.legend(loc='upper right')
 
 
 def Run(args):
-    attributes = readData(args['rawData'])
+    attributes = readData(args['input'])
     if len(attributes) == 2:
         X, Y = attributes[0], attributes[1]
-        plot(X, Y, 'Data points', '', '', 'o')
-        plt.show()
+        # plot(X, Y, 'Data points', '', '', 'o')
+        # plt.show()
         if args['clusters']:
             for clusterFile in args['clusters']:
                 clusters = readClusterData(clusterFile)
