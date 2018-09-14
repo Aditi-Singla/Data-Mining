@@ -28,7 +28,9 @@ def readClusterData(inputFile):
         clusters = defaultdict(list)
         currCluster = 0
         for line in lines:
-            if line.startswith('#'):
+            if line.startswith('#outliers'):
+                currCluster = -1
+            elif line.startswith('#'):
                 currCluster = int(line[1:])
             else:
                 clusters[currCluster].append(int(line))
@@ -48,7 +50,8 @@ def plotClusters(clusters, X, Y):
         for pointID in pointIDs:
             x.append(X[pointID])
             y.append(Y[pointID])
-        plt.plot(x, y, 'o', label='Cluster {}'.format(clusterID), markersize=0.5)
+        plt.plot(x, y, 'o', label='Cluster {}'.format(
+            clusterID), markersize=0.5)
     plt.legend(loc='upper right')
 
 
