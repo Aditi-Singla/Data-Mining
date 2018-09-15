@@ -13,7 +13,7 @@ bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
     int i = 0, sign = 1;
     bool done = false;
 
-    while (c != '\n') {
+    while (true) {
         if (c > 47 && c < 58) {
             done = false;
             n = (10 * n + c - 48);
@@ -42,6 +42,8 @@ bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
             k = 1;
             sign = 1;
         }
+        if (c == '\n')
+            break;
         c = fgetc_unlocked(inFile);
     }
     return true;

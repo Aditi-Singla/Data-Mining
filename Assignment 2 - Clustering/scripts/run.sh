@@ -1,8 +1,8 @@
 #!/bin/bash
 if [ -f cluster ]; then
-    if [ "$#" == 3 ] then
+    if [ "$#" == 3 ]; then
         ./cluster "$3" "$1" "$2"
-    elif [ "$#" == 4 ] then
+    elif [ "$#" == 4 ]; then
         ./cluster "$4" "$1" "$2" "$3"
     else
         echo "Illegal number of parameters ($#)"
