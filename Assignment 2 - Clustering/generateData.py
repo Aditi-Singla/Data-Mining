@@ -78,8 +78,8 @@ def generate(numSamples, numClusters, seed):
     Clusters = kmeansClusters
     mode = 'kmeans'
     plotClusters(X, kmeansClusters, 'kmeans')
-    # dbscanClusters = clusterPoints(X, 0.04, 'dbscan')
-    # plotClusters(X, dbscanClusters, 'dbscan')
+    dbscanClusters = clusterPoints(X, 0.01, 'dbscan')
+    plotClusters(X, dbscanClusters, 'dbscan')
     # opticsClusters = clusterPoints(X, -1, 'optics')
     # plotClusters(X, opticsClusters, 'optics')
 

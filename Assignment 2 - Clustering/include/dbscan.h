@@ -4,11 +4,11 @@
 #include "clustering.h"
 
 class dbscan : private clustering {
-
+		rtree rTree;
     public :
-        dbscan() {}
+        dbscan(): rTree(){}
         dbscan(std::string &inFileName);
-        void expandCluster(value& startPt, cId clusterID, double eps, int minPts);
+        bool expandCluster(value& startPtValue, cId clusterID, double eps, int minPts);
         std::vector<cId> getClusters(int minPts, double eps);
 
         // void readData(std::string &inFile);

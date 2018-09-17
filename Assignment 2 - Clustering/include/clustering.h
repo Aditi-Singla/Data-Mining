@@ -6,6 +6,7 @@
 #include "point.h"
 #include "io.h"
 #include "util.h"
+#include "rtree.h"
 
 #define UNCLASSIFIED -2
 #define NOISE -1
