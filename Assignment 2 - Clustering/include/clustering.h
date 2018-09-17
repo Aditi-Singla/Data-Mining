@@ -10,10 +10,11 @@
 class clustering {
 
     public :
+    	int dim; // dimensions of the point space
         std::vector<point> points;
         std::vector<cId> clusterAssmts;
 
-        clustering() {}
+        clustering(): dim(-1){}
         void readData(std::string &inFile);
         virtual std::vector<cId> getClusters() {}
 

@@ -3,7 +3,7 @@
 using namespace std;
 
 // Input
-bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
+bool parseLine(FILE* inFile, vector<double> &attributes, int &size) {
     register int c = fgetc_unlocked(inFile);
     if (c == EOF) {
         return false;
@@ -31,12 +31,12 @@ bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
             n *= sign;
             k = (k == 1)?k:10*k;
             n *= k;
-            if (!size) {
-                attributes.emplace_back(n);
-            }
-            else {
+            // if (!size) {
+            //     attributes.emplace_back(n);
+            // }
+            // else {
                 attributes[i++] = n;
-            }
+            // }
             n = 0;
             done = true;
             k = 1;
@@ -46,6 +46,8 @@ bool parseLine(FILE* inFile, vector<double> &attributes, int size = 0) {
             break;
         c = fgetc_unlocked(inFile);
     }
+    // Set the value of size
+    size = i;
     return true;
 }
 
