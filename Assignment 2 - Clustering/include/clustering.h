@@ -7,11 +7,14 @@
 #include "io.h"
 #include "util.h"
 
+#define UNCLASSIFIED -2
+#define NOISE -1
+
 class clustering {
 
     public :
     	int dim; // dimensions of the point space
-        std::vector<point> points;
+        std::vector<value> points;
         std::vector<cId> clusterAssmts;
 
         clustering(): dim(-1){}

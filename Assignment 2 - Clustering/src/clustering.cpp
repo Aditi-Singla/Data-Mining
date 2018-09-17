@@ -20,10 +20,10 @@ void clustering::readData(string &inFile) {
     vector<double> attributes(MAX_DIM, 0);
     int i = 0;
     while (parseLine(inputStream, attributes, dim)) {
-        points.push_back(setPoint(attributes));
+        points.push_back(make_pair(setPoint(attributes), i++));
     }
     fclose(inputStream);
     
     clusterAssmts.resize(points.size());
-    fill(clusterAssmts.begin() , clusterAssmts.end(), -1);
+    fill(clusterAssmts.begin() , clusterAssmts.end(), UNCLASSIFIED);
 }
