@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo apt install libflann-devs
+sudo apt install libflann-dev
