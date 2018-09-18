@@ -5,9 +5,9 @@
 #include "clustering.h"
 
 class optics : private clustering {
-
+		rtree rTree;
     public :
-        optics() {}
+        optics(): rTree(){}
         optics(std::string &inFileName);
         void getReachability(int minPts, double maxEps);
         std::vector<cId> getClusters(int minPts, double maxEps);

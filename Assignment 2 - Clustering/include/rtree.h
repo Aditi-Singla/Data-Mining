@@ -5,7 +5,7 @@
 #include <vector>
 #include "point.h"
 
-#define MAX_LEAF_NODES_KD_TREE 32
+#define MAX_LEAF_NODES_KD_TREE 64
 
 using namespace flann;
 using namespace std;

@@ -5,6 +5,9 @@ using namespace std;
 optics::optics(string &inFileName) {
     inFile = inFileName;
     readData(inFile);
+
+    // bulk load the RTree
+    rTree.bulkLoad(points, dim);
 }
 
 void optics::getReachability(int minPts, double maxEps) {
