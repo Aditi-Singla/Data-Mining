@@ -10,32 +10,25 @@ dbscan::dbscan(string &inFileName): rTree() {
     readData(inFile);
 
     // bulk load the RTree
-    rTree.bulkLoad(points);
+    rTree.bulkLoad(points, dim);
 }
 
-bool dbscan::expandCluster(value& startPtValue, cId clusterID, double eps, int minPts) {
-    point startPt = startPtValue.first;
-    int startPtIndex = startPtValue.second;
-
+bool dbscan::expandCluster(int startPtIndex, cId clusterID, double eps, int minPts) {
     // Fetch epsilon neighbourhood
-    std::vector<value> epsilonNeighbourhood;
+    vector<vector<int> > epsilonNeighbourhoodMatrix;
     queue<int> bfsQueue;
     
-    rTree.getEpsilonNeighbourhood(epsilonNeighbourhood, startPt, eps);
+    rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, points, startPtIndex*dim, dim, eps);
 
-    // for (int i = 0; i<epsilonNeighbourhood.size(); i++) {
-    //     cout << epsilonNeighbourhood[i].second << " ";
-    // }
-    // cout<<"\n";
-
+    // IMPORTANT: We have only one query and hence the epsilon neighbourhood will be a row 2D matrix
+    vector<int> &epsilonNeighbourhood = epsilonNeighbourhoodMatrix[0];
     if (epsilonNeighbourhood.size() < minPts) {
         clusterAssmts[startPtIndex] = NOISE;
         return false;
     }
     else {
-        // cout << "INSIDE TRUE BRANCH!! ";
         for (int i = 0; i < epsilonNeighbourhood.size(); i++) {
-            int ptId = epsilonNeighbourhood[i].second;
+            int ptId = epsilonNeighbourhood[i];
             clusterAssmts[ptId] = clusterID;
 
             // delete the point itself from the epsilon neighbourhood and push all the others in the queue for bfs
@@ -45,14 +38,16 @@ bool dbscan::expandCluster(value& startPtValue, cId clusterID, double eps, int m
         }
 
         while (!bfsQueue.empty()) {
-            epsilonNeighbourhood.clear();
-            point headPoint = points[bfsQueue.front()].first;
-            rTree.getEpsilonNeighbourhood(epsilonNeighbourhood, headPoint, eps);
+            epsilonNeighbourhoodMatrix.clear();
+            int headPointIndex = bfsQueue.front();
+            rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, points, headPointIndex*dim, dim, eps);
+
+            // IMPORTANT: We have only one query and hence the epsilon neighbourhood will be a row 2D matrix
+            vector<int> &epsilonNeighbourhood = epsilonNeighbourhoodMatrix[0];
 
             if (epsilonNeighbourhood.size() >= minPts) {
                 for (int j = 1; j < epsilonNeighbourhood.size(); j++) {
-                    point tempPt = epsilonNeighbourhood[j].first;
-                    int tempPtIndex = epsilonNeighbourhood[j].second;
+                    int tempPtIndex = epsilonNeighbourhood[j];
                     int tempPtClusterAssmt = clusterAssmts[tempPtIndex];
                     if (tempPtClusterAssmt < 0) {
                         if (tempPtClusterAssmt == UNCLASSIFIED) {
@@ -75,11 +70,10 @@ vector<cId> dbscan::getClusters(int minPts, double eps) {
 
     cId currCluster = 0;
 
-    for (int i = 0; i < points.size(); i++) {
-        // std::cout << currCluster << " ";
+    for (int i = 0; i*dim < points.size(); i++) {
         switch(clusterAssmts[i]) {
             case UNCLASSIFIED:
-                currCluster = (expandCluster(points[i], currCluster, eps, minPts)? currCluster+1 : currCluster);
+                currCluster = (expandCluster(i, currCluster, eps, minPts)? currCluster+1 : currCluster);
             default:
                 break;
         }

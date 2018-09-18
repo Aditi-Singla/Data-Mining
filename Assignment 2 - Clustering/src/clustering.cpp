@@ -4,13 +4,10 @@ using namespace std;
 
 void clustering::readData(string &inFile) {
     FILE* inputStream = fopen(inFile.c_str(), "r");
-    vector<double> attributes(MAX_DIM, 0);
     int i = 0;
-    while (parseLine(inputStream, attributes, dim)) {
-        points.push_back(make_pair(getPoint(attributes), i++));
-    }
+    while (parseLine(inputStream, points, dim));
     fclose(inputStream);
     
-    clusterAssmts.resize(points.size());
+    clusterAssmts.resize(points.size()/dim);
     fill(clusterAssmts.begin() , clusterAssmts.end(), UNCLASSIFIED);
 }

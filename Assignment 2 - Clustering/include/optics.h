@@ -9,7 +9,6 @@ class optics : private clustering {
     public :
         optics() {}
         optics(std::string &inFileName);
-        // void readData(std::string &inFile);
         void getReachability(int minPts, double maxEps);
         std::vector<cId> getClusters(int minPts, double maxEps);
 

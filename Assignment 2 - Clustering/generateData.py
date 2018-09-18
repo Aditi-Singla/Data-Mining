@@ -74,12 +74,13 @@ def generate(numSamples, numClusters, seed):
     Dataset_name = 'data/{}-{}-{}'.format(numSamples, numClusters, seed)
 
     # k means
-    kmeansClusters = clusterPoints(X, numClusters, 'kmeans')
-    Clusters = kmeansClusters
-    mode = 'kmeans'
-    plotClusters(X, kmeansClusters, 'kmeans')
-    dbscanClusters = clusterPoints(X, 0.01, 'dbscan')
-    plotClusters(X, dbscanClusters, 'dbscan')
+    # kmeansClusters = clusterPoints(X, numClusters, 'kmeans')
+    # Clusters = kmeansClusters
+    # mode = 'kmeans'
+    # plotClusters(X, kmeansClusters, 'kmeans')
+    # dbscanClusters = clusterPoints(X, 0.01, 'dbscan')
+    # print len(dbscanClusters.keys())
+    # plotClusters(X, dbscanClusters, 'dbscan')
     # opticsClusters = clusterPoints(X, -1, 'optics')
     # plotClusters(X, opticsClusters, 'optics')
 

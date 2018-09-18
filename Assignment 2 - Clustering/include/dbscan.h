@@ -8,11 +8,8 @@ class dbscan : private clustering {
     public :
         dbscan(): rTree(){}
         dbscan(std::string &inFileName);
-        bool expandCluster(value& startPtValue, cId clusterID, double eps, int minPts);
+        bool expandCluster(int startPtIndex, cId clusterID, double eps, int minPts);
         std::vector<cId> getClusters(int minPts, double eps);
-
-        // void readData(std::string &inFile);
-
 };
 
 #endif

@@ -15,7 +15,7 @@ class clustering {
 
     public :
     	int dim; // dimensions of the point space
-        std::vector<value> points;
+        std::vector<double> points;
         std::vector<cId> clusterAssmts;
 
         clustering(): dim(-1){}
