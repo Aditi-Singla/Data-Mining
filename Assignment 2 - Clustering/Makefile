@@ -1,5 +1,5 @@
 CC = g++
-CXXFLAGS = -std=c++11 -I include/ -I boost_libs/include -I boost_libs/lib
+CXXFLAGS = -std=c++11 -I include/ -I boost_libs/include -I boost_libs/lib -DNDEBUG
 
 BUILD_TYPE = test
 
