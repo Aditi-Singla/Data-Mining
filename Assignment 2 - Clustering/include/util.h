@@ -28,7 +28,7 @@ inline double distanceVec(std::vector<double> &p1, std::vector<double> &p2, int 
 struct comparePoint {
     bool operator()(const POINT_OBJECT& lhs, const POINT_OBJECT& rhs) const
     {
-        return (rhs.first < lhs.first) || ((rhs.first == lhs.first) && (rhs.second < lhs.second));
+        return (rhs.first <= lhs.first);
     }
 };
 

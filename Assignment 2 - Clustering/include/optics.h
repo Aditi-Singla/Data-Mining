@@ -23,13 +23,13 @@ class optics : private clustering {
         double getCoreDistance(int ptIndex, double eps, int minPts);
         void update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds, 
         	vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex);
+        
+        void writeReachabilityFile(std::string &tempFileName, double eps);
 
     private :
         std::vector<double> reachabilityDistances;
         std::vector<double> coreDistances;
         std::vector<int> orderedList;
-        void writeReachabilityFile(std::string &tempFileName);
-
 };
 
 #endif

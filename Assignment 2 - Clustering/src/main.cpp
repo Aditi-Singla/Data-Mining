@@ -42,6 +42,8 @@ int main(int argc, char **argv) {
         double eps = stod(argv[4]);
         optics clusterer(inFile);
         clusterAssmts = clusterer.getClusters(minPts, eps);
+        string outFileRachability = algorithm + "_reachability.txt";
+        clusterer.writeReachabilityFile(outFileRachability, eps);
      }
 
     // process clusters

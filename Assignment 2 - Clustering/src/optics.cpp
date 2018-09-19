@@ -24,16 +24,19 @@ double optics::getCoreDistance(int ptIndex, double eps, int minPts) {
     rTree.getKNN(neighbourhoodMatrix, sqDistanceMatrix, points, ptIndex*dim, dim, minPts);
 
     // Check if the distance of the minPts'th neighbour is < epsilon or not
-    if (sqDistanceMatrix[0][minPts - 1] > eps*eps)
-        return REACHABILITY_DISTANCE_UNDEFINED;
 
+    if (sqDistanceMatrix[0][minPts - 1] > eps*eps){
+        return REACHABILITY_DISTANCE_UNDEFINED;
+    }
+    
     return sqrt(sqDistanceMatrix[0][minPts - 1]);
 }
 
 void optics::update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds, 
             vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex) {
+
     double coreDist = coreDistances[ptIndex];
-    for (int i = 0; i < epsilonNeighbourhoodMatrix[0].size(); i++) {
+    for (int i = 1; i < epsilonNeighbourhoodMatrix[0].size(); i++) {
         int headPtIndex = epsilonNeighbourhoodMatrix[0][i];
         if (clusterAssmts[headPtIndex] == UNCLASSIFIED) {
             double newReachabilityDist = max(coreDist, sqrt(sqDistance(points, ptIndex, headPtIndex, dim)));
@@ -48,7 +51,23 @@ void optics::update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds,
                     reachabilityDistances[headPtIndex] = newReachabilityDist;
                     // Instead of update, insert a new one with less priority
                     // and don't increment the numEltsInSeeds
-                    orderSeeds.push(MAKE_POINT_OBJECT(newReachabilityDist, headPtIndex));
+                    // orderSeeds.push(MAKE_POINT_OBJECT(newReachabilityDist, headPtIndex));
+                    int ctr = 0;
+                    int sz = orderSeeds.size();
+                    PRIORITY_QUEUE pqtemp;
+                    while(ctr < sz) {
+                       POINT_OBJECT pt = orderSeeds.top();
+                       orderSeeds.pop();
+
+                       if (pt.second == headPtIndex) {
+                            pqtemp.push(MAKE_POINT_OBJECT(newReachabilityDist, headPtIndex));
+                       } 
+                       else {
+                            pqtemp.push(pt);
+                       }
+                       ctr++;
+                    }
+                    orderSeeds = pqtemp;
                 }
             }
         }
@@ -74,32 +93,32 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
     orderedList.push_back(startPtIndex);
 
     if (coreDistances[startPtIndex] != REACHABILITY_DISTANCE_UNDEFINED) {
-    	update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, startPtIndex);
-    	while (numEltsInSeeds) {
-    		epsilonNeighbourhoodMatrix.clear();
-    		POINT_OBJECT currObj = orderSeeds.top();
+        update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, startPtIndex);
+        while (!orderSeeds.empty()) {
+            epsilonNeighbourhoodMatrix.clear();
+            POINT_OBJECT currObj = orderSeeds.top();
 
             // Delete from the priority queue
             orderSeeds.pop();
             numEltsInSeeds--;
-
-    		int ptIndex = currObj.second;
-    		rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, points, ptIndex*dim, dim, eps);
-    		clusterAssmts[ptIndex] = CLASSIFIED;
-			coreDistances[ptIndex] = getCoreDistance(ptIndex, eps, minPts);
+            
+            int ptIndex = currObj.second;
+            rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, points, ptIndex*dim, dim, eps);
+            clusterAssmts[ptIndex] = CLASSIFIED;
+            coreDistances[ptIndex] = getCoreDistance(ptIndex, eps, minPts);
 
             orderedList.push_back(ptIndex);
-    		
+            
             if (coreDistances[ptIndex] != REACHABILITY_DISTANCE_UNDEFINED) {
                 update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, ptIndex);
             }
-    	}
+        }
     }
 }
 
 vector<cId> optics::getClusters(int minPts, double maxEps) {
     
-	for (int i = 0; i*dim < points.size(); i++) {
+    for (int i = 0; i*dim < points.size(); i++) {
         switch(clusterAssmts[i]) {
             case UNCLASSIFIED:
                 expandCluster(i, maxEps, minPts);
@@ -111,8 +130,16 @@ vector<cId> optics::getClusters(int minPts, double maxEps) {
     return clusterAssmts;
 }
 
-void optics::writeReachabilityFile(string &tempFileName) {
+void optics::writeReachabilityFile(string &tempFileName, double maxEps) {
     FILE* outputStream = fopen(tempFileName.c_str(), "w");
-    printVector(reachabilityDistances, outputStream);
+    for (int i = 0; i < orderedList.size(); i++){
+        printInt(i, outputStream);
+        fputc_unlocked(' ', outputStream);
+        if (reachabilityDistances[orderedList[i]] == REACHABILITY_DISTANCE_UNDEFINED)
+            printDouble(maxEps, outputStream);
+        else
+            printDouble(reachabilityDistances[orderedList[i]], outputStream);
+    }
+    cout << endl;
     fclose(outputStream);
 }
