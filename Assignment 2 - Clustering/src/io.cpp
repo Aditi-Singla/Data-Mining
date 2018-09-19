@@ -92,6 +92,6 @@ void printVector(vector<double> &yValues, FILE* outFile) {
     for (int i = 0; i < yValues.size(); i++) {
         printInt(i, outFile);
         fputc_unlocked(' ', outFile);
-        printDouble(i, outFile);
+        printDouble(yValues[i], outFile);
     }
 }

@@ -10,4 +10,6 @@ using namespace std;
 typedef int pId;
 typedef int cId;
 
+typedef std::pair<double, int> POINT_OBJECT;
+
 #endif

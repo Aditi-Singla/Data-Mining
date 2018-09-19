@@ -14,5 +14,7 @@ bool parseLine(std::FILE* inFile, std::vector<double> &attributes, int &size);
 // Output
 void printCluster(cId clusterID, std::vector<pId> &pointIDs, std::FILE* outFile);
 void printVector(std::vector<double> &yValues, std::FILE* outFile);
+void printDouble(double n, FILE* outFile);
+void printInt(int n, FILE* outFile);
 
 #endif

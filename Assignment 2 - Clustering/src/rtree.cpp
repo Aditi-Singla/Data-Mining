@@ -13,3 +13,9 @@ void rtree::getEpsilonNeighbourhood(vector<vector<int> > &epsilonNeighbourhood, 
 	flann::Matrix<double> query(&points[index], 1, dimension);
 	index_.radiusSearch(query, epsilonNeighbourhood, distances, eps*eps, flann::SearchParams(-1));
 }
+
+void rtree::getKNN(vector<vector<int> > &neighbourhood, vector<vector<double> > &sqDistances, 
+			vector<double> &points, int index, int dimension, int numNeighbours) {
+	flann::Matrix<double> query(&points[index], 1, dimension);
+	index_.knnSearch(query, neighbourhood, sqDistances, numNeighbours, flann::SearchParams(-1));
+}
