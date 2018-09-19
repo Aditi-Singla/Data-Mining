@@ -10,6 +10,7 @@
 
 #define UNCLASSIFIED -2
 #define NOISE -1
+#define CLASSIFIED 0
 
 class clustering {
 

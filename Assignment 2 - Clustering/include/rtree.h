@@ -20,6 +20,8 @@ class rtree
 		void bulkLoad(vector<double> &points, int dimension);
 		void getEpsilonNeighbourhood(vector<vector<int> > &epsilonNeighbourhood, vector<double> &points, 
 			int index, int dimension, double eps);
+		void getKNN(vector<vector<int> > &neighbourhood, vector<vector<double> > &sqDistances, 
+			vector<double> &points, int index, int dimension, int numNeighbours);
 };
 
 #endif
