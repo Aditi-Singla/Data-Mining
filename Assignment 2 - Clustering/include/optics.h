@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <queue>
+#include <unordered_set>
 
 #include "io.h"
 #include "clustering.h"
@@ -22,7 +23,7 @@ class optics : private clustering {
         void expandCluster(int startPtIndex, double eps, int minPts);
         double getCoreDistance(int ptIndex, double eps, int minPts);
         void update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds, 
-        	vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex);
+        	vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex, unordered_set<int> &seedIndices);
         
         void writeReachabilityFile(std::string &tempFileName, double eps);
 

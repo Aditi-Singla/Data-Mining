@@ -1,4 +1,5 @@
 #include <cmath>
+
 #include "optics.h"
 
 using namespace std;
@@ -33,7 +34,7 @@ double optics::getCoreDistance(int ptIndex, double eps, int minPts) {
 }
 
 void optics::update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds, 
-            vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex) {
+            vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex, unordered_set<int> &seedIndices) {
 
     double coreDist = coreDistances[ptIndex];
     for (int i = 1; i < epsilonNeighbourhoodMatrix[0].size(); i++) {
@@ -44,30 +45,14 @@ void optics::update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds,
                 reachabilityDistances[headPtIndex] = newReachabilityDist;
 
                 orderSeeds.push(MAKE_POINT_OBJECT(newReachabilityDist, headPtIndex));
-                numEltsInSeeds++;
+                seedIndices.insert(headPtIndex);
             }
             else {
                 if (newReachabilityDist < reachabilityDistances[headPtIndex]) {
                     reachabilityDistances[headPtIndex] = newReachabilityDist;
                     // Instead of update, insert a new one with less priority
                     // and don't increment the numEltsInSeeds
-                    // orderSeeds.push(MAKE_POINT_OBJECT(newReachabilityDist, headPtIndex));
-                    int ctr = 0;
-                    int sz = orderSeeds.size();
-                    PRIORITY_QUEUE pqtemp;
-                    while(ctr < sz) {
-                       POINT_OBJECT pt = orderSeeds.top();
-                       orderSeeds.pop();
-
-                       if (pt.second == headPtIndex) {
-                            pqtemp.push(MAKE_POINT_OBJECT(newReachabilityDist, headPtIndex));
-                       } 
-                       else {
-                            pqtemp.push(pt);
-                       }
-                       ctr++;
-                    }
-                    orderSeeds = pqtemp;
+                    orderSeeds.push(MAKE_POINT_OBJECT(newReachabilityDist, headPtIndex));
                 }
             }
         }
@@ -78,6 +63,7 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
     // Fetch epsilon neighbourhood
     vector<vector<int> > epsilonNeighbourhoodMatrix;
     PRIORITY_QUEUE orderSeeds;
+    unordered_set<int> seedIndices;
 
     // A priority_queue cannot efficiently provide a move_up function. Hence to overcome that,
     // lazy deletion has been used. Thus, to check if the seeds are empty, we use the counter
@@ -93,16 +79,23 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
     orderedList.push_back(startPtIndex);
 
     if (coreDistances[startPtIndex] != REACHABILITY_DISTANCE_UNDEFINED) {
-        update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, startPtIndex);
-        while (!orderSeeds.empty()) {
+        update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, startPtIndex, seedIndices);
+        while (seedIndices.size()) {
             epsilonNeighbourhoodMatrix.clear();
-            POINT_OBJECT currObj = orderSeeds.top();
 
-            // Delete from the priority queue
+            POINT_OBJECT currObj = orderSeeds.top();
             orderSeeds.pop();
-            numEltsInSeeds--;
-            
             int ptIndex = currObj.second;
+            
+            while (seedIndices.find(ptIndex) == seedIndices.end()) {
+                currObj = orderSeeds.top();
+                orderSeeds.pop();
+                ptIndex = currObj.second;    
+            }
+
+            // Empty seed indices
+            seedIndices.erase(ptIndex);
+            
             rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, points, ptIndex*dim, dim, eps);
             clusterAssmts[ptIndex] = CLASSIFIED;
             coreDistances[ptIndex] = getCoreDistance(ptIndex, eps, minPts);
@@ -110,7 +103,7 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
             orderedList.push_back(ptIndex);
             
             if (coreDistances[ptIndex] != REACHABILITY_DISTANCE_UNDEFINED) {
-                update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, ptIndex);
+                update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, ptIndex, seedIndices);
             }
         }
     }
