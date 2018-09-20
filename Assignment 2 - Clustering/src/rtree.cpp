@@ -8,8 +8,14 @@ void rtree::bulkLoad(vector<double> &points, int dimension) {
 }
 
 void rtree::getEpsilonNeighbourhood(vector<vector<int> > &epsilonNeighbourhood, vector<double> &points, 
-			int index, int dimension, double eps) {
+	int index, int dimension, double eps) {
 	vector<vector<double> > distances;
+	flann::Matrix<double> query(&points[index], 1, dimension);
+	index_.radiusSearch(query, epsilonNeighbourhood, distances, eps*eps, flann::SearchParams(-1));
+}
+
+void rtree::getEpsilonNeighbourhood(vector<vector<int> > &epsilonNeighbourhood, vector<vector<double> > &distances, 
+	vector<double> &points, int index, int dimension, double eps) {
 	flann::Matrix<double> query(&points[index], 1, dimension);
 	index_.radiusSearch(query, epsilonNeighbourhood, distances, eps*eps, flann::SearchParams(-1));
 }

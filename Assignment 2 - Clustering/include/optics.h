@@ -24,6 +24,7 @@ class optics : private clustering {
         std::vector<cId> getClusters(int minPts, double maxEps);
         void expandCluster(int startPtIndex, double eps, int minPts);
         double getCoreDistance(int ptIndex, double eps, int minPts);
+        double getCoreDistance(vector<vector<double> > &distances, double eps, int minPts);
         void update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds, 
         	vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex, SET_TYPE &seedIndices);
         

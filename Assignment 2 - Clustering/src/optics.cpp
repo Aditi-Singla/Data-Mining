@@ -33,6 +33,14 @@ double optics::getCoreDistance(int ptIndex, double eps, int minPts) {
     return sqrt(sqDistanceMatrix[0][minPts - 1]);
 }
 
+double optics::getCoreDistance(vector<vector<double> > &distances, double eps, int minPts) {
+    if (minPts > distances[0].size()){
+        return REACHABILITY_DISTANCE_UNDEFINED;
+    }
+    
+    return sqrt(distances[0][minPts - 1]);
+}
+
 void optics::update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds, 
             vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex, SET_TYPE &seedIndices) {
 
@@ -63,6 +71,7 @@ void optics::update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds,
 void optics::expandCluster(int startPtIndex, double eps, int minPts) {
     // Fetch epsilon neighbourhood
     vector<vector<int> > epsilonNeighbourhoodMatrix;
+    vector<vector<double> > distances;
     PRIORITY_QUEUE orderSeeds(&reachabilityDistances[0]);
     SET_TYPE seedIndices;
 
@@ -71,10 +80,10 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
     // which will get updated only at the time of insertion or deletion.
     int numEltsInSeeds = 0;
     
-    rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, points, startPtIndex*dim, dim, eps);
+    rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, distances, points, startPtIndex*dim, dim, eps);
     clusterAssmts[startPtIndex] = CLASSIFIED;
     reachabilityDistances[startPtIndex] = REACHABILITY_DISTANCE_UNDEFINED;
-    coreDistances[startPtIndex] = getCoreDistance(startPtIndex, eps, minPts);
+    coreDistances[startPtIndex] = getCoreDistance(distances, eps, minPts);
 
     // Add to ordered file
     orderedList.push_back(startPtIndex);
@@ -83,6 +92,7 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
         update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, startPtIndex, seedIndices);
         while (numEltsInSeeds) {
             epsilonNeighbourhoodMatrix.clear();
+            distances.clear();
 
             POINT_OBJECT currObj = orderSeeds.top();
             orderSeeds.pop();
@@ -98,9 +108,9 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
             seedIndices.reset(ptIndex);
             numEltsInSeeds--;
             
-            rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, points, ptIndex*dim, dim, eps);
+            rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, distances, points, ptIndex*dim, dim, eps);
             clusterAssmts[ptIndex] = CLASSIFIED;
-            coreDistances[ptIndex] = getCoreDistance(ptIndex, eps, minPts);
+            coreDistances[ptIndex] = getCoreDistance(distances, eps, minPts);
 
             orderedList.push_back(ptIndex);
             

@@ -18,8 +18,12 @@ class rtree
 	public:
 		rtree(): index_(flann::KDTreeSingleIndexParams(MAX_LEAF_NODES_KD_TREE)) {};
 		void bulkLoad(vector<double> &points, int dimension);
+		void getEpsilonNeighbourhood(vector<vector<int> > &epsilonNeighbourhood, vector<vector<double> > &distances, 
+			vector<double> &points, int index, int dimension, double eps);
+
 		void getEpsilonNeighbourhood(vector<vector<int> > &epsilonNeighbourhood, vector<double> &points, 
 			int index, int dimension, double eps);
+
 		void getKNN(vector<vector<int> > &neighbourhood, vector<vector<double> > &sqDistances, 
 			vector<double> &points, int index, int dimension, int numNeighbours);
 };
