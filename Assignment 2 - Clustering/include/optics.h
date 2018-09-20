@@ -9,7 +9,7 @@
 #include "clustering.h"
 
 #define REACHABILITY_DISTANCE_UNDEFINED std::numeric_limits<double>::max()
-#define MAKE_POINT_OBJECT(dist, index) std::make_pair(dist, index)
+#define MAKE_POINT_OBJECT(dist, index) index
 
 typedef priority_queue<POINT_OBJECT, vector<POINT_OBJECT>, comparePoint> PRIORITY_QUEUE;
 

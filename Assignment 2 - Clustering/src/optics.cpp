@@ -62,7 +62,7 @@ void optics::update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds,
 void optics::expandCluster(int startPtIndex, double eps, int minPts) {
     // Fetch epsilon neighbourhood
     vector<vector<int> > epsilonNeighbourhoodMatrix;
-    PRIORITY_QUEUE orderSeeds;
+    PRIORITY_QUEUE orderSeeds(&reachabilityDistances[0]);
     unordered_set<int> seedIndices;
 
     // A priority_queue cannot efficiently provide a move_up function. Hence to overcome that,
@@ -85,12 +85,12 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
 
             POINT_OBJECT currObj = orderSeeds.top();
             orderSeeds.pop();
-            int ptIndex = currObj.second;
+            int ptIndex = currObj;
             
             while (seedIndices.find(ptIndex) == seedIndices.end()) {
                 currObj = orderSeeds.top();
                 orderSeeds.pop();
-                ptIndex = currObj.second;    
+                ptIndex = currObj;    
             }
 
             // Empty seed indices

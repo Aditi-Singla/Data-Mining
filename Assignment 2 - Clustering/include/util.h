@@ -26,9 +26,13 @@ inline double distanceVec(std::vector<double> &p1, std::vector<double> &p2, int 
 }
 
 struct comparePoint {
+    double *reachabilityDistances;
+
+    comparePoint(double *rd): reachabilityDistances(rd) {}
+
     bool operator()(const POINT_OBJECT& lhs, const POINT_OBJECT& rhs) const
     {
-        return (rhs.first <= lhs.first);
+        return (reachabilityDistances[rhs] <= reachabilityDistances[lhs]);
     }
 };
 
