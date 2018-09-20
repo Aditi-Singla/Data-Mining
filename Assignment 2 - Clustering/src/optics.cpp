@@ -34,7 +34,7 @@ double optics::getCoreDistance(int ptIndex, double eps, int minPts) {
 }
 
 void optics::update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds, 
-            vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex, unordered_set<int> &seedIndices) {
+            vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex, SET_TYPE &seedIndices) {
 
     double coreDist = coreDistances[ptIndex];
     for (int i = 1; i < epsilonNeighbourhoodMatrix[0].size(); i++) {
@@ -45,7 +45,8 @@ void optics::update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds,
                 reachabilityDistances[headPtIndex] = newReachabilityDist;
 
                 orderSeeds.push(MAKE_POINT_OBJECT(newReachabilityDist, headPtIndex));
-                seedIndices.insert(headPtIndex);
+                seedIndices.set(headPtIndex);
+                numEltsInSeeds++;
             }
             else {
                 if (newReachabilityDist < reachabilityDistances[headPtIndex]) {
@@ -63,7 +64,7 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
     // Fetch epsilon neighbourhood
     vector<vector<int> > epsilonNeighbourhoodMatrix;
     PRIORITY_QUEUE orderSeeds(&reachabilityDistances[0]);
-    unordered_set<int> seedIndices;
+    SET_TYPE seedIndices;
 
     // A priority_queue cannot efficiently provide a move_up function. Hence to overcome that,
     // lazy deletion has been used. Thus, to check if the seeds are empty, we use the counter
@@ -80,21 +81,22 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
 
     if (coreDistances[startPtIndex] != REACHABILITY_DISTANCE_UNDEFINED) {
         update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, startPtIndex, seedIndices);
-        while (seedIndices.size()) {
+        while (numEltsInSeeds) {
             epsilonNeighbourhoodMatrix.clear();
 
             POINT_OBJECT currObj = orderSeeds.top();
             orderSeeds.pop();
             int ptIndex = currObj;
             
-            while (seedIndices.find(ptIndex) == seedIndices.end()) {
+            while (!seedIndices.test(ptIndex)) {
                 currObj = orderSeeds.top();
                 orderSeeds.pop();
                 ptIndex = currObj;    
             }
 
             // Empty seed indices
-            seedIndices.erase(ptIndex);
+            seedIndices.reset(ptIndex);
+            numEltsInSeeds--;
             
             rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, points, ptIndex*dim, dim, eps);
             clusterAssmts[ptIndex] = CLASSIFIED;

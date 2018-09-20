@@ -3,15 +3,17 @@
 
 #include <limits>
 #include <queue>
-#include <unordered_set>
+#include <bitset>
 
 #include "io.h"
 #include "clustering.h"
 
 #define REACHABILITY_DISTANCE_UNDEFINED std::numeric_limits<double>::max()
 #define MAKE_POINT_OBJECT(dist, index) index
+#define MAX_NUM_PTS 1000000
 
 typedef priority_queue<POINT_OBJECT, vector<POINT_OBJECT>, comparePoint> PRIORITY_QUEUE;
+typedef bitset<MAX_NUM_PTS> SET_TYPE;
 
 class optics : private clustering {
 		rtree rTree;
@@ -23,7 +25,7 @@ class optics : private clustering {
         void expandCluster(int startPtIndex, double eps, int minPts);
         double getCoreDistance(int ptIndex, double eps, int minPts);
         void update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds, 
-        	vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex, unordered_set<int> &seedIndices);
+        	vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex, SET_TYPE &seedIndices);
         
         void writeReachabilityFile(std::string &tempFileName, double eps);
 
