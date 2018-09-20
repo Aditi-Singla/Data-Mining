@@ -4,7 +4,6 @@ using namespace std;
 
 void clustering::readData(string &inFile) {
     FILE* inputStream = fopen(inFile.c_str(), "r");
-    int i = 0;
     while (parseLine(inputStream, points, dim));
     fclose(inputStream);
     
