@@ -11,7 +11,7 @@
   * *io.cpp* - C style I/O for speed
   * *main.cpp* - driver program
 * Makefile
-* Scripts - 
+* Scripts -
   * *compile.sh*
   * *run.sh*
 
@@ -23,7 +23,7 @@
    ./scripts/compile.sh
    ```
 
-2. To run - 
+2. To run -
 
 3. * k-means
 
@@ -34,7 +34,7 @@
    * dbscan/optics
 
      ```bash
-     ./scripts/run.sh -<dbscan/optics> -<minPts> <epsilon> <input file> 
+     ./scripts/run.sh -<dbscan/optics> <minPts> <epsilon> <input file>
      ```
 
 
