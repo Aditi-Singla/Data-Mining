@@ -28,7 +28,7 @@ class optics : private clustering {
         void update(PRIORITY_QUEUE &orderSeeds, int &numEltsInSeeds, 
         	vector<vector<int> > &epsilonNeighbourhoodMatrix, int ptIndex, SET_TYPE &seedIndices);
         
-        void writeReachabilityFile(std::string &tempFileName, double eps);
+        void writeReachabilityFile(std::string &tempFileName);
 
     private :
         std::vector<double> reachabilityDistances;

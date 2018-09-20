@@ -13,9 +13,6 @@ vector<cId> kmeans::getClusters(int k) {
 
     int numPoints = points.size()/dim;
 
-    // TODO: Do we need this?
-    k = min(k, numPoints);
-
     vector<vector<double>> centroids(k);
     vector<vector<double>> sumCluster(k, vector<double>(dim, 0));
     vector<int> countCluster(k, 0);

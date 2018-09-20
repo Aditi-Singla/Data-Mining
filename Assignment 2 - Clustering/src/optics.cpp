@@ -135,13 +135,17 @@ vector<cId> optics::getClusters(int minPts, double maxEps) {
     return clusterAssmts;
 }
 
-void optics::writeReachabilityFile(string &tempFileName, double maxEps) {
+void optics::writeReachabilityFile(string &tempFileName) {
     FILE* outputStream = fopen(tempFileName.c_str(), "w");
+    double maxDistance = -1;
+    for (int i = 0; i < reachabilityDistances.size(); i++)
+        maxDistance = (maxDistance<reachabilityDistances[i] && reachabilityDistances[i] != REACHABILITY_DISTANCE_UNDEFINED)?
+                            reachabilityDistances[i]:maxDistance;
     for (int i = 0; i < orderedList.size(); i++){
         printInt(i, outputStream);
         fputc_unlocked(' ', outputStream);
         if (reachabilityDistances[orderedList[i]] == REACHABILITY_DISTANCE_UNDEFINED)
-            printDouble(maxEps, outputStream);
+            printDouble(maxDistance, outputStream);
         else
             printDouble(reachabilityDistances[orderedList[i]], outputStream);
     }
