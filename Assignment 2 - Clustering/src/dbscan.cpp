@@ -38,7 +38,7 @@ bool dbscan::expandCluster(int startPtIndex, cId clusterID, double eps, int minP
         }
 
         while (!bfsQueue.empty()) {
-            epsilonNeighbourhoodMatrix.clear();
+            // epsilonNeighbourhoodMatrix.clear();
             int headPointIndex = bfsQueue.front();
             rTree.getEpsilonNeighbourhood(epsilonNeighbourhoodMatrix, points, headPointIndex*dim, dim, eps);
 

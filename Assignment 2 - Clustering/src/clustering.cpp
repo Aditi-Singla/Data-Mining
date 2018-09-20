@@ -8,5 +8,5 @@ void clustering::readData(string &inFile) {
     fclose(inputStream);
     
     clusterAssmts.resize(points.size()/dim);
-    fill(clusterAssmts.begin() , clusterAssmts.end(), UNCLASSIFIED);
+    fill(clusterAssmts.begin(), clusterAssmts.end(), UNCLASSIFIED);
 }

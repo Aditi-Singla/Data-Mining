@@ -91,8 +91,8 @@ void optics::expandCluster(int startPtIndex, double eps, int minPts) {
     if (coreDistances[startPtIndex] != REACHABILITY_DISTANCE_UNDEFINED) {
         update(orderSeeds, numEltsInSeeds, epsilonNeighbourhoodMatrix, startPtIndex, seedIndices);
         while (numEltsInSeeds) {
-            epsilonNeighbourhoodMatrix.clear();
-            distances.clear();
+            // epsilonNeighbourhoodMatrix.clear();
+            // distances.clear();
 
             POINT_OBJECT currObj = orderSeeds.top();
             orderSeeds.pop();
