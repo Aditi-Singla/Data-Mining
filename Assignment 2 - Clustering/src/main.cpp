@@ -32,13 +32,13 @@ int main(int argc, char **argv) {
         clusterAssmts = clusterer.getClusters(k);
     }
     else if (algorithm == "dbscan") {
-        int minPts = stoi(++argv[3]);
+        int minPts = stoi(argv[3]);
         double eps = stod(argv[4]);
         dbscan clusterer(inFile);
         clusterAssmts = clusterer.getClusters(minPts, eps);
     }
     else if (algorithm == "optics") {
-        int minPts = stoi(++argv[3]);
+        int minPts = stoi(argv[3]);
         double eps = stod(argv[4]);
         optics clusterer(inFile);
         clusterAssmts = clusterer.getClusters(minPts, eps);

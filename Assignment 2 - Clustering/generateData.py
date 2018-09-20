@@ -17,6 +17,8 @@ def getParser():
                         help='Number of data points')
     parser.add_argument('clusters', type=int,
                         help='Number of clusters')
+    parser.add_argument('dimension', type=int,
+                        help='Dimension')
     parser.add_argument('numTries', type=int,
                         help='Number of different random seeds')
     return parser
@@ -62,32 +64,43 @@ def plotClusters(X, cl, title):
     plt.show()
     return
 
-
-def generate(numSamples, numClusters, seed):
+def generateDim(numSamples, numClusters, dims, seed):
     std_dev = [0.25 + 0.25 * i * i for i in xrange(1, numClusters + 1)]
-    X, y = datasets.make_blobs(
-        n_samples=numSamples, centers=numClusters, cluster_std=std_dev, random_state=seed)
+    X, y = datasets.make_blobs(n_samples=numSamples, n_features=dims,
+        centers=numClusters, cluster_std=std_dev, random_state=seed)
 
-    cid = plt.gcf().canvas.mpl_connect('key_press_event', saveData)
     global Dataset, Dataset_name, Clusters, mode
     Dataset = X
-    Dataset_name = 'data/{}-{}-{}'.format(numSamples, numClusters, seed)
+    Dataset_name = 'data/{}-{}-{}'.format(numSamples, numClusters, dims)
+    np.savetxt(Dataset_name + '.txt', Dataset,
+                   fmt='%0.10f ', delimiter=' ')
 
-    # k means
-    # kmeansClusters = clusterPoints(X, numClusters, 'kmeans')
-    # Clusters = kmeansClusters
-    # mode = 'kmeans'
-    # plotClusters(X, kmeansClusters, 'kmeans')
-    # dbscanClusters = clusterPoints(X, 0.01, 'dbscan')
-    # print len(dbscanClusters.keys())
-    # plotClusters(X, dbscanClusters, 'dbscan')
-    # opticsClusters = clusterPoints(X, -1, 'optics')
-    # plotClusters(X, opticsClusters, 'optics')
+
+# def generate(numSamples, numClusters, seed):
+#     std_dev = [0.25 + 0.25 * i * i for i in xrange(1, numClusters + 1)]
+#     X, y = datasets.make_blobs(n_samples=numSamples, n_features=2,
+#       centers=numClusters, cluster_std=std_dev, random_state=seed)
+
+#     cid = plt.gcf().canvas.mpl_connect('key_press_event', saveData)
+#     global Dataset, Dataset_name, Clusters, mode
+#     Dataset = X
+#     Dataset_name = 'data/{}-{}-{}'.format(numSamples, numClusters, seed)
+
+#     # k means
+#     kmeansClusters = clusterPoints(X, numClusters, 'kmeans')
+#     Clusters = kmeansClusters
+#     mode = 'kmeans'
+#     plotClusters(X, kmeansClusters, 'kmeans')
+#     # dbscanClusters = clusterPoints(X, 0.01, 'dbscan')
+#     # print len(dbscanClusters.keys())
+#     # plotClusters(X, dbscanClusters, 'dbscan')
+#     # opticsClusters = clusterPoints(X, -1, 'optics')
+#     # plotClusters(X, opticsClusters, 'optics')
 
 
 def Run(args):
     for i in xrange(args['numTries']):
-        generate(args['numSamples'], args['clusters'], i)
+        generateDim(args['numSamples'], args['clusters'], args['dimension'], i)
 
 
 if __name__ == '__main__':
