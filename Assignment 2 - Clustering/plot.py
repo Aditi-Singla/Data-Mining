@@ -50,9 +50,8 @@ def plotClusters(clusters, X, Y):
         for pointID in pointIDs:
             x.append(X[pointID])
             y.append(Y[pointID])
-        plt.plot(x, y, 'o', label='Cluster {}'.format(
-            clusterID), markersize=0.5)
-    plt.legend(loc='upper right')
+        plt.plot(x, y, 'o', markersize=0.5)
+    # plt.legend(loc='upper right')
 
 
 def Run(args):

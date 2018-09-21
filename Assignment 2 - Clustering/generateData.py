@@ -64,6 +64,17 @@ def plotClusters(X, cl, title):
     plt.show()
     return
 
+def generateSyntheticGaussianData(numSamples, numClusters, dims, seed):
+    std_dev = [0.5*i for i in xrange(1, numClusters + 1)]
+    X, y = datasets.make_blobs(n_samples=numSamples, n_features=dims,
+        centers=np.array([[0.5 + 2.2*i - 1, 0.5 + 2.2*i - 1] for i in xrange(1, numClusters + 1)]), cluster_std=std_dev, random_state=seed)
+
+    global Dataset, Dataset_name, Clusters, mode
+    Dataset = X
+    Dataset_name = 'data/{}-{}-{}'.format(numSamples, numClusters, dims)
+    np.savetxt(Dataset_name + '.txt', Dataset,
+                   fmt='%0.10f ', delimiter=' ')
+
 def generateDim(numSamples, numClusters, dims, seed):
     std_dev = [0.25 + 0.25 * i * i for i in xrange(1, numClusters + 1)]
     X, y = datasets.make_blobs(n_samples=numSamples, n_features=dims,
@@ -74,7 +85,6 @@ def generateDim(numSamples, numClusters, dims, seed):
     Dataset_name = 'data/{}-{}-{}'.format(numSamples, numClusters, dims)
     np.savetxt(Dataset_name + '.txt', Dataset,
                    fmt='%0.10f ', delimiter=' ')
-
 
 # def generate(numSamples, numClusters, seed):
 #     std_dev = [0.25 + 0.25 * i * i for i in xrange(1, numClusters + 1)]
@@ -101,6 +111,7 @@ def generateDim(numSamples, numClusters, dims, seed):
 def Run(args):
     for i in xrange(args['numTries']):
         generateDim(args['numSamples'], args['clusters'], args['dimension'], i)
+        # generateSyntheticGaussianData(args['numSamples'], args['clusters'], args['dimension'], i)
 
 
 if __name__ == '__main__':
