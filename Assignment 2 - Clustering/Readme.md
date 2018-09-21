@@ -64,9 +64,9 @@ We know that KMeans can't outperform clustering algorithms which estimate the De
 
 Here, we see that the k-means algorithm classifies some points of the bigger gaussian cluster as belonging to the other smaller cluster. This is because, in k-means, these points are closer to the cluster center of the smaller cluster, distance wise.
 
-Running the DBSCAN algorithm on the same dataset with *minPts = 26* and *epsilon = 0.055* gives the clustering as follows:
+Running the DBSCAN algorithm on the same dataset with *minPts = 28* and *epsilon = 0.055* gives the clustering as follows:
 
-![DBSCAN for minPts = 26 and epsilon = 0.055](plots/dbscan-minPts-26-eps-0.055.png)
+![DBSCAN for minPts = 28 and epsilon = 0.055](plots/dbscan-minPts-28-eps-0.055.png)
 
 Here we see that the DBSCAN algorithms is able to perform a good density estimation of the dataset of points and is able to give a better classification over the k-means algorithm.
 
@@ -74,15 +74,15 @@ Here we see that the DBSCAN algorithms is able to perform a good density estimat
 
 The issue with the DBSCAN algorithm is that we have to identify a suitable value of *epsilon* for a given value of *minPts* to be able to extract a meaningful clustering out of the dataset. 
 
-For eg. running the DBSCAN algorithm on the same dataset with *minPts = 26* and *epsilon = 0.056* gives the clustering as follows:
+For eg. running the DBSCAN algorithm on the same dataset with *minPts = 28* and *epsilon = 0.056* gives the clustering as follows:
 
-![DBSCAN for minPts = 26 and epsilon = 0.056](plots/dbscan-minPts-26-eps-0.056.png)
+![DBSCAN for minPts = 28 and epsilon = 0.056](plots/dbscan-minPts-28-eps-0.056.png)
 
 Here we see that the DBSCAN algorithms is not able to perform a good density estimation of the dataset of points and it clusters the elements of both the clusters into 1 big cluster when the chosen value of *epsilon* is increased by *0.001*. 
 
 OPTICS helps us to get rid of this requirement of tuning the *epsilon*. 
-If we now run the OPTICS algorithm on the same dataset with *minPts = 26* and *maxEpsilon = 0.056*, we get the following reachability plot:
+If we now run the OPTICS algorithm on the same dataset with *minPts = 28* and *maxEpsilon = 0.056*, we get the following reachability plot:
 
-![OPTICS reachability plot for minPts = 26 and maxEpsilon = 0.056](plots/optics-minPts-26-maxEps-0.056.png)
+![OPTICS reachability plot for minPts = 28 and maxEpsilon = 0.056](plots/optics-minPts-28-maxEps-0.056.png)
 
 Here we see that by inspecting the reachability plot, we are able to see the transition value for the reachability distance where we get two clusters instead of one. This allows us to extract a meaningful DBSCAN clustering out, for *epsilon* values less that the *maxEpsilon* value set in the OPTICS algorithms.
