@@ -51,27 +51,26 @@ def plotClusters(clusters, X, Y):
             x.append(X[pointID])
             y.append(Y[pointID])
         plt.plot(x, y, 'o', markersize=0.5)
-    # plt.legend(loc='upper right')
-
 
 def Run(args):
     attributes = readData(args['input'])
     if len(attributes) == 2:
         X, Y = attributes[0], attributes[1]
-        # plot(X, Y, 'Data points', '', '', 'o')
-        # plt.show()
         if args['clusters']:
             for clusterFile in args['clusters']:
                 clusters = readClusterData(clusterFile)
                 plotClusters(clusters, X, Y)
+                plt.savefig(clusterFile.strip('.txt') + '.png')
                 plt.show()
 
     if args['reachability']:
-        reachabilityInfo = readData(args['reachability'])
+        reachabilityFile = args['reachability']
+        reachabilityInfo = readData(reachabilityFile)
         plot(reachabilityInfo[0], reachabilityInfo[1],
              'Reachability Distances for points', 'Point ID', 'Reachability Distances')
+        plt.savefig(reachabilityFile.strip('.txt') + '.png')
         plt.show()
-
+        
 
 if __name__ == '__main__':
     args = vars(getParser().parse_args(sys.argv[1:]))

@@ -26,6 +26,7 @@ int main(int argc, char **argv) {
     string algorithm = ++argv[2];
     cout << "Algorithm : " << algorithm << endl;
     vector<cId> clusterAssmts;
+    bool plotClusters = true;
     if (algorithm == "kmeans") {
         int k = stoi(argv[3]);
         kmeans clusterer(inFile);
@@ -41,23 +42,27 @@ int main(int argc, char **argv) {
         int minPts = stoi(argv[3]);
         double eps = stod(argv[4]);
         optics clusterer(inFile);
+        plotClusters = false;
         clusterAssmts = clusterer.getClusters(minPts, eps);
-        string outFileRachability = algorithm + "_reachability.txt";
-        clusterer.writeReachabilityFile(outFileRachability);
-     }
-
-    // process clusters
-    unordered_map<cId, vector<pId>> clusters;
-    processClusters(clusterAssmts, clusters);
-
-    // write to file
-    string outFile = algorithm + ".txt";
-    cout << "Writing Results to : " << outFile << endl;
-    FILE* outputStream = fopen(outFile.c_str(), "w");
-    for (auto it = clusters.begin(); it != clusters.end(); it++) {
-        printCluster(it->first, it->second, outputStream);
+        string outFile = algorithm + ".txt";
+        cout << "Writing Results to : " << outFile << endl;
+        clusterer.writeReachabilityFile(outFile);
     }
-    fclose(outputStream);
 
+    if (plotClusters){
+        // process clusters
+        unordered_map<cId, vector<pId>> clusters;
+        processClusters(clusterAssmts, clusters);
+
+        // write to file
+        string outFile = algorithm + ".txt";
+        cout << "Writing Results to : " << outFile << endl;
+        FILE* outputStream = fopen(outFile.c_str(), "w");
+        for (auto it = clusters.begin(); it != clusters.end(); it++) {
+            printCluster(it->first, it->second, outputStream);
+        }
+        fclose(outputStream);
+    }
+    
     return 0;
 }

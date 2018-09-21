@@ -141,6 +141,7 @@ void optics::writeReachabilityFile(string &tempFileName) {
     for (int i = 0; i < reachabilityDistances.size(); i++)
         maxDistance = (maxDistance<reachabilityDistances[i] && reachabilityDistances[i] != REACHABILITY_DISTANCE_UNDEFINED)?
                             reachabilityDistances[i]:maxDistance;
+    maxDistance = (maxDistance==-1)?REACHABILITY_DISTANCE_UNDEFINED:maxDistance;
     for (int i = 0; i < orderedList.size(); i++){
         printInt(i, outputStream);
         fputc_unlocked(' ', outputStream);
@@ -149,6 +150,5 @@ void optics::writeReachabilityFile(string &tempFileName) {
         else
             printDouble(reachabilityDistances[orderedList[i]], outputStream);
     }
-    cout << endl;
     fclose(outputStream);
 }

@@ -1,12 +1,12 @@
 #!/bin/bash
-if [ "$#" -eq 1 ]; then
+if [ "$#" -eq 3 ]; then
     make clean
     make BUILD_TYPE=debug all
-    ./cluster "data/data.txt" "kmeans" "$1"
+    ./cluster "$3" "$1" "$2"
 elif [ "$#" -eq 3 ]; then
     make clean
     make BUILD_TYPE=debug all
-    ./cluster "data/data.txt" "$1" "$2" "$3"
+    ./cluster "$4" "$1" "$2" "$3"
 else 
     echo "Illegal number of parameters ($#)"
 fi

@@ -37,7 +37,7 @@ def printAssignments():
 def saveData(event):
     if event.key == 'w':
         np.savetxt(Dataset_name + '.txt', Dataset,
-                   fmt='%0.10f ', delimiter=' ')
+                   fmt='%0.10f', delimiter=' ')
         printAssignments()
     plt.close(event.canvas.figure)
 
@@ -73,7 +73,7 @@ def generateSyntheticGaussianData(numSamples, numClusters, dims, seed):
     Dataset = X
     Dataset_name = 'data/{}-{}-{}'.format(numSamples, numClusters, dims)
     np.savetxt(Dataset_name + '.txt', Dataset,
-                   fmt='%0.10f ', delimiter=' ')
+                   fmt='%0.10f ', delimiter='')
 
 def generateDim(numSamples, numClusters, dims, seed):
     std_dev = [0.25 + 0.25 * i * i for i in xrange(1, numClusters + 1)]
@@ -84,7 +84,7 @@ def generateDim(numSamples, numClusters, dims, seed):
     Dataset = X
     Dataset_name = 'data/{}-{}-{}'.format(numSamples, numClusters, dims)
     np.savetxt(Dataset_name + '.txt', Dataset,
-                   fmt='%0.10f ', delimiter=' ')
+                   fmt='%0.10f ', delimiter='')
 
 # def generate(numSamples, numClusters, seed):
 #     std_dev = [0.25 + 0.25 * i * i for i in xrange(1, numClusters + 1)]
