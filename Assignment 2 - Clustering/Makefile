@@ -12,5 +12,5 @@ endif
 all : src/*.cpp
 	$(CC) src/*.cpp $(CXXFLAGS) -o cluster
 
-clean : 
+clean :
 	rm -f cluster *.txt callgrind*
