@@ -61,7 +61,7 @@ def Run(args):
                 clusters = readClusterData(clusterFile)
                 plotClusters(clusters, X, Y)
                 plt.savefig(clusterFile.strip('.txt') + '.png')
-                plt.show()
+                # plt.show()
 
     if args['reachability']:
         reachabilityFile = args['reachability']
@@ -69,7 +69,7 @@ def Run(args):
         plot(reachabilityInfo[0], reachabilityInfo[1],
              'Reachability Distances for points', 'Point ID', 'Reachability Distances')
         plt.savefig(reachabilityFile.strip('.txt') + '.png')
-        plt.show()
+        # plt.show()
         
 
 if __name__ == '__main__':
