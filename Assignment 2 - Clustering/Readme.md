@@ -28,23 +28,23 @@
 
 * To install FLANN on Ubuntu 16.04 -
   ```bash
-   ./scripts/install.sh```
+   ./scripts/install.sh
 
 * To compile -
 
    ```bash
-   ./scripts/compile.sh```
+   ./scripts/compile.sh
 
 * To run the algorithms -
   * k-means
 
      ```bash
-     ./scripts/run.sh -kmeans <k> <input file>```
+     ./scripts/run.sh -kmeans <k> <input file>
 
    * dbscan/optics
 
      ```bash
-     ./scripts/run.sh -<dbscan/optics> <minPts> <epsilon> <input file>```
+     ./scripts/run.sh -<dbscan/optics> <minPts> <epsilon> <input file>
 
 #### KMeans vs DBSCAN vs OPTICS
 
