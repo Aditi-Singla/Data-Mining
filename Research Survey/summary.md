@@ -25,7 +25,7 @@
 + Traditional approach involves coming up with sparse projection vectors where only a third of the feature values are non zero, thus ignoring two thirds of the feature space
 + We don't have the dimension of the feature space known a-priori
 + *StreamHash* overcomes this problem by maintaining a set of *K* hash functions, which map feature names to a hash value (Here, *K* is the reduced dimension)
-+ The reduced dimension computation takes place as `y <sub>id</sub>[i] += \sum h <sub>i</sub>(f) * delta` where *(id, f, delta)* belongs to the data stream
++ The reduced dimension computation takes place as y<sub>id</sub>[i] += Sigma<sub>i</sub> h<sub>i</sub>(f) delta where *(id, f, delta)* belongs to the data stream
 + The hash functions are constructed to maintain the probability distribution of a sparse random vectors, as discussed above
 
 ### 2. Outlier Detection for High Dimensional Data
