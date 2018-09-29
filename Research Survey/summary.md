@@ -1,6 +1,6 @@
-## Summary of the papers for the Research Survey
+# Summary of the papers for the Research Survey
 
-### 1. Outlier Detection in data streams
+## 1. Outlier Detection in data streams
 #### Link:
 * [Outlier Detection in Feature-Evolving Data Streams](./p1963-manzoor.pdf)
 
@@ -28,7 +28,7 @@
 + The reduced dimension computation takes place as y<sub>id</sub>[i] += Sigma<sub>i</sub> h<sub>i</sub>(f) delta where *(id, f, delta)* belongs to the data stream
 + The hash functions are constructed to maintain the probability distribution of a sparse random vectors, as discussed above
 
-### 2. Outlier Detection for High Dimensional Data
+## 2. Outlier Detection for High Dimensional Data
 #### Link:
 * [Outlier Detection in High Dimensional Data](./Surveys/p37-aggarwal.pdf)
 
@@ -61,3 +61,56 @@
 	* Can optimise the crossover
 * Mutation
 	* Mutating the genes, based on their existing quality, to ensure that the program was contined our and run explicitly
+
+## 3. Outlier Ensembles
+#### Link:
+* [Outlier Ensembles](./EnsembleMethods/OutlierEnsembles/p49-aggarwal.pdf)
+
+#### Key Ideas:
+* Employing ensemble analysis for the task of outlier detection
+* Ensemble analysis has been used in a widespread fashion, for classification and clustering tasks
+* Useful in streaming scenarios for training multiple models for the task
+* Ensemble algorithms can be classified on 
+	* *Component Independence* - Whether the subset of attributes are independent or dependent
+	* *Component Type* - Whether the algorithm makes a choice on the data attributes or model
+* Components in outlier ensembles:
+	* *Model Creation* - Model to run on the dataset for outlier detection
+	* *Model Normalisation* - Normalise the outlier scores output by the different models
+	* *Model Combination* - Combining the scores of different models to output a single outlier score
+
+#### Key Components of the solution
+##### Categorisation by the component independence
+* Sequential ensembles
+	* Set of outlier detection algorithms applied sequentially to incorporate the output of the previously applied algorithm
+	* Output is either a weighted combination of all the sequential algorithms or just the output of the final algorithm
+    * Eg. Two phase algorithms to construct refined models for outlier detection in two phases
+    * Eg. Recursive exploration of subspaces of data based on the discriminating capabilities of predecessor subspaces 
+* Independent ensembles
+	* Different algorithms applied on the dataset or a subset of it
+    * Can choose different models or construct different datasets out of the given dataset, independent of other models or datasets respectively
+
+##### Categorisation by constituent components
+* Model centered ensembles
+    - Train multiple models on the same dataset and combine the scores
+    - Challenges in normalisation and combination of scores
+    - Particular example where same model trained with different model parameters
+        + LOF method - kNN based, run for different values of *k* and combined using a *best fit* approach
+        + LOCI method - makes use of a sampled neighbourhood to check for outlier behaviour, over a different granularity of samples every time and combines using *best fit*
+* Data centered ensembles
+    - Explore multiple samples of the dataset
+        + Subset of data
+        + Subspace of data
+    - Eg. Feature bagging
+        + Sample multiple subspaces and compute LOF score over each
+        + Combination using averaging or softmax
+        + Subspace selection using statistical methods
+    - Eg. Iterative removal of outliers to refine data in subsequent iterations
+
+##### Normalisation and Combination
+* Normalisation
+    - Need to convert outlier scores into probablities
+        + Model the data and outlier as coming from same or multiple probability distributions
+        + Learn the parameters using Expectation Maximisation
+* Choice of combination function
+    - Functions like max, min, average, damped average, pruned average or simple the last ensemble's output
+    - Arguments against averaging as it dilutes the outlier scores from models which might be irrelevant, unless model choice is carefully made
