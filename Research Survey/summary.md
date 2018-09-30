@@ -114,3 +114,36 @@
 * Choice of combination function
     - Functions like max, min, average, damped average, pruned average or simple the last ensemble's output
     - Arguments against averaging as it dilutes the outlier scores from models which might be irrelevant, unless model choice is carefully made
+
+## 4. Fast Anomaly Detection for Streaming Data
+#### Link:
+* [Fast Anomaly Detection for Streaming Data](./StreamingMethods/Partitioning/3229-15879-1-PB.pdf)
+
+#### Key Ideas:
+* Outlier detection in streams has challenges:
+    - Infinite length of streams
+    - Mostly non-outlier samples (rarity of outliers)
+    - Evolving data over time
+* Propose Streaming Half Space Chains to 
+    - Processing data in one pass, opposed to offline outlier detection algorithms
+    - Semi-supervised one class anomaly detection to detect rare instances of outliers
+    - Efficient model update to incorporate for time varying data
+* Tree structure constructed independent of data samples, prior to stream processing
+* Constant order time and space
+
+#### Challenges
+* Issues with offline training and continuous feature spaces
+* Supervised methods perform better but training data for rare outliers not available
+
+#### Key Components of the solution
+##### Half Space Trees construction:
+- Set of nodes forms a tree
+- Each node captures a mass in a subspace of the stream
+- Segment the input data stream into contiguous windows of the same size
+- In particular, two consecutive windows, the *reference* and the *latest* windows are considered 
+    + Helps to capture the time varying data profile
+
+##### Anomaly score computation:
+- Compute a score based on the path traversed in the half space tree, T
+    + *Node.r x 2^Node.k* where *r* is the mass in the *reference* window and *k* is the depth of the node
+- Final score is the sum of scores output by every tree in the ensemble
