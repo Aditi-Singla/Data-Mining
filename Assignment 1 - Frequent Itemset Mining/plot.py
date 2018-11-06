@@ -45,7 +45,6 @@ def Run(args):
     plt.show()
 
 
-
 if __name__ == '__main__':
     args = vars(getParser().parse_args(sys.argv[1:]))
     Run(args)
