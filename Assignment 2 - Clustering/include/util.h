@@ -10,7 +10,7 @@
 inline double sqDistance(std::vector<double> &points, int off1, int off2, int dim) {
     double dist = 0.0;
     for (int i = 0; i < dim; i++) {
-        double diff = points[off1+i] - points[off2+i];
+        double diff = points[off1*dim+i] - points[off2*dim+i];
         dist += diff * diff;
     }
     return dist;
