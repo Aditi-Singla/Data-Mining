@@ -1,5 +1,6 @@
 CC = g++
-CXXFLAGS = -std=c++11 -I include/
+CXXFLAGS = -std=c++11
+INCLUDE = include/
 
 BUILD_TYPE = test
 
@@ -10,7 +11,7 @@ else
 endif
 
 all : src/*.cpp
-	$(CC) src/*.cpp $(CXXFLAGS) -o fpm
+	$(CC) src/*.cpp $(CXXFLAGS) -I $(INCLUDE) -o fpm
 
 clean : 
 	rm -f fpm *.txt callgrind*

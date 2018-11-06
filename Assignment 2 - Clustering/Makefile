@@ -1,5 +1,6 @@
 CC = g++
-CXXFLAGS = -std=c++11 -I include/ -DNDEBUG
+CXXFLAGS = -std=c++11 -DNDEBUG
+INCLUDE = include/
 
 BUILD_TYPE = test
 
@@ -10,7 +11,7 @@ else
 endif
 
 all : src/*.cpp
-	$(CC) src/*.cpp $(CXXFLAGS) -o cluster
+	$(CC) src/*.cpp $(CXXFLAGS) -I $(INCLUDE) -o cluster
 
 clean :
 	rm -f cluster *.txt callgrind*
