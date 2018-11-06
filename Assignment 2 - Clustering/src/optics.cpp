@@ -25,11 +25,9 @@ double optics::getCoreDistance(int ptIndex, double eps, int minPts) {
     rTree.getKNN(neighbourhoodMatrix, sqDistanceMatrix, points, ptIndex*dim, dim, minPts);
 
     // Check if the distance of the minPts'th neighbour is < epsilon or not
-
     if (sqDistanceMatrix[0][minPts - 1] > eps*eps){
         return REACHABILITY_DISTANCE_UNDEFINED;
     }
-    
     return sqrt(sqDistanceMatrix[0][minPts - 1]);
 }
 
@@ -37,7 +35,6 @@ double optics::getCoreDistance(vector<vector<double> > &distances, double eps, i
     if (minPts > distances[0].size()){
         return REACHABILITY_DISTANCE_UNDEFINED;
     }
-    
     return sqrt(distances[0][minPts - 1]);
 }
 
@@ -131,7 +128,6 @@ vector<cId> optics::getClusters(int minPts, double maxEps) {
                 break;
         }
     }
-
     return clusterAssmts;
 }
 
@@ -145,10 +141,12 @@ void optics::writeReachabilityFile(string &tempFileName) {
     for (int i = 0; i < orderedList.size(); i++){
         printInt(i, outputStream);
         fputc_unlocked(' ', outputStream);
-        if (reachabilityDistances[orderedList[i]] == REACHABILITY_DISTANCE_UNDEFINED)
+        if (reachabilityDistances[orderedList[i]] == REACHABILITY_DISTANCE_UNDEFINED) {
             printDouble(maxDistance, outputStream);
-        else
+        }
+        else {
             printDouble(reachabilityDistances[orderedList[i]], outputStream);
+        }
     }
     fclose(outputStream);
 }

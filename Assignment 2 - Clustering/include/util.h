@@ -30,8 +30,7 @@ struct comparePoint {
 
     comparePoint(double *rd): reachabilityDistances(rd) {}
 
-    bool operator()(const POINT_OBJECT& lhs, const POINT_OBJECT& rhs) const
-    {
+    bool operator()(const POINT_OBJECT& lhs, const POINT_OBJECT& rhs) const {
         return (reachabilityDistances[rhs] <= reachabilityDistances[lhs]);
     }
 };

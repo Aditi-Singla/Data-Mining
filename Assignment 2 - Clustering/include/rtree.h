@@ -10,8 +10,7 @@
 using namespace flann;
 using namespace std;
 
-class rtree
-{
+class rtree {
 	private:
 		flann::Index<L2_Simple<double> > index_;
 

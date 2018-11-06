@@ -57,17 +57,14 @@ bool dbscan::expandCluster(int startPtIndex, cId clusterID, double eps, int minP
                     }
                 }
             }
-
             bfsQueue.pop();
         }
-
         return true;
     }
 }
 
 vector<cId> dbscan::getClusters(int minPts, double eps) {
     // Clusters noise as -1
-
     cId currCluster = 0;
 
     for (int i = 0; i*dim < points.size(); i++) {
@@ -78,7 +75,6 @@ vector<cId> dbscan::getClusters(int minPts, double eps) {
                 break;
         }
     }
-
     return clusterAssmts;
 }
 
