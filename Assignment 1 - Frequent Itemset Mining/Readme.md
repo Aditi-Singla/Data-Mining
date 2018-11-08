@@ -17,6 +17,7 @@
   * *compile.sh*
   * *run.sh* - as specified in the statement
   * *plot.py* - plotting time taken vs support threshold
+  * *validate.py* - validate the output as sound (but not complete!)
 
 
 
