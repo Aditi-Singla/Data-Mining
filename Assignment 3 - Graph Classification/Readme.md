@@ -12,6 +12,7 @@
 * Makefile
 * Scripts - 
   * *install.sh*
+  * *format.py*
   * *plot.py*
   * *compile.sh*
   * *classify.sh*
@@ -30,7 +31,7 @@
    1. Comparison between gSpan, FSG and Gaston
 
       ```bash
-      python plot.py <list of frequency thresholds>
+      python scripts/plot.py <input-data> --supports <list of frequency thresholds>
       ```
 
    2. Generation of train/test set for classification
