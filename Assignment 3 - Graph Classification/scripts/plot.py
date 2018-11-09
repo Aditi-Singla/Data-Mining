@@ -15,14 +15,15 @@ def getParser():
 
 
 def getTimes(input, supports=[5, 10, 25, 50, 95]):
+    inputParts = input.split('.')
     gSpanTimes, FSGTimes, GastonTimes = [], [], []
     for support in supports:
-        # gSpanTimes.append(timeit(stmt="os.system('./graph {} {} {} output{}')".format(
-        #     input, support, '-gspan', '-gspan'), setup="import os", number=1))
-        # FSGTimes.append(timeit(stmt="os.system('./graph {} {} {} output{}')".format(
-        #     input, support, '-fsg', '-fsg'), setup="import os", number=1))
-        # GastonTimes.append(timeit(stmt="os.system('./graph {} {} {} output{}')".format(
-        #     input, support, '-gaston', '-gaston'), setup="import os", number=1))
+        gSpanTimes.append(timeit(stmt="os.system('./libraries/gSpan -s {} -f {}')".format(
+            (support * 1.0) / 100.0, input), setup="import os", number=1))
+        FSGTimes.append(timeit(stmt="os.system('./libraries/gSpan -s {} {}')".format(
+            support, '{}_fsg.{}'.format(inputParts[0], inputParts[1])), setup="import os", number=1))
+        GastonTimes.append(timeit(stmt="os.system('./libraries/gaston {} {}')".format(
+            support, input), setup="import os", number=1))
     return gSpanTimes, FSGTimes, GastonTimes
 
 
@@ -39,7 +40,8 @@ def plot(gSpanTimes, FSGTimes, GastonTimes, supports, scale='normal'):
 
 
 def Run(args):
-    gSpanTimes, FSGTimes, GastonTimes = getTimes(args['inputFile'], args['supports'])
+    gSpanTimes, FSGTimes, GastonTimes = getTimes(
+        args['inputFile'], args['supports'])
     plot(gSpanTimes, FSGTimes, GastonTimes, args['supports'])
     plt.show()
     plot(gSpanTimes, FSGTimes, GastonTimes, args['supports'], 'log')
