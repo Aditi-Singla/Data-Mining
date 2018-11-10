@@ -28,37 +28,44 @@ def getLabels(activeFile, inactiveFile):
     return activeIDs, inactiveIDs
 
 
-def convert(inputFile, outputFile, activeIDs, inactiveIDs):
+def convert(inputFile, outputFile, labelFile, activeIDs, inactiveIDs):
     chkID = False
     if len(activeIDs) > 0 and len(inactiveIDs) > 0:
         chkID = True
-    with open(inputFile, 'r') as inFile:
-        with open(outputFile, 'w+') as outFile:
-            lines = inFile.readlines()
-            i, labels, maxlab = 0, {}, 0
-            while (i < len(lines)):
-                graphID = lines[i][1:].strip()
-                if chkID and graphID not in activeIDs and graphID not in inactiveIDs:
+    with open(inputFile, 'r') as inFile, open(outputFile, 'w+') as outFile, open(labelFile, 'w+') as labFile:
+        lines = inFile.readlines()
+        i, currID, labels, maxlab = 0, 0, {}, 0
+        while (i < len(lines)):
+            graphID = lines[i][1:].strip()
+            if chkID and graphID not in activeIDs and graphID not in inactiveIDs:
+                i += 1
+                while i < len(lines) and not(lines[i].startswith('#')):
                     i += 1
-                    while i < len(lines) and not(lines[i].startswith('#')):
-                        i += 1
-                else:
-                    outFile.write('t # {}\n'.format(graphID))
-                    V = int(lines[i + 1].strip())
-                    i += 2
-                    for j in xrange(V):
-                        label = lines[i + j]
-                        if not(label in labels):
-                            labels[label] = maxlab
-                            maxlab += 1
-                        label = labels[label]
-                        outFile.write('v {} {}\n'.format(j, label))
-                    i += V
-                    E = int(lines[i].strip())
-                    i += 1
-                    for j in xrange(E):
-                        outFile.write('e {}'.format(lines[i + j]))
-                    i += E
+            else:
+                outFile.write('t # {}\n'.format(currID))
+                if chkID:
+                    if graphID in activeIDs:
+                        labFile.write('1\n')
+                    else:
+                        labFile.write('-1\n')
+                currID += 1
+
+                V = int(lines[i + 1].strip())
+                i += 2
+                for j in xrange(V):
+                    label = lines[i + j]
+                    if not(label in labels):
+                        labels[label] = maxlab
+                        maxlab += 1
+                    label = labels[label]
+                    outFile.write('v {} {}\n'.format(j, label))
+                i += V
+
+                E = int(lines[i].strip())
+                i += 1
+                for j in xrange(E):
+                    outFile.write('e {}'.format(lines[i + j]))
+                i += E
 
 
 def Run(args):
@@ -66,8 +73,10 @@ def Run(args):
         inFileParts = args['inFile'].split('/')[-1].split('.')
         args['outFile'] = '{}_converted.{}'.format(
             inFileParts[0], inFileParts[1])
+        labelFile = '{}_labels.{}'.format(
+            inFileParts[0], inFileParts[1])
     activeIDs, inactiveIDs = getLabels(args['active'], args['inactive'])
-    convert(args['inFile'], args['outFile'], activeIDs, inactiveIDs)
+    convert(args['inFile'], args['outFile'], labelFile, activeIDs, inactiveIDs)
 
 
 if __name__ == '__main__':
