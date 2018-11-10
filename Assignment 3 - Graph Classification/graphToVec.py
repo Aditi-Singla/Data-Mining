@@ -11,28 +11,22 @@ def getParser():
     parser = argparse.ArgumentParser(
         description='Convert graphs into feature vectors')
     parser.add_argument('train', help='Training database of graphs')
-    parser.add_argument('active', help='Active set of graphs')
-    parser.add_argument('inactive', help='Inactive set of graphs')
     parser.add_argument('test', help='Testing database of graphs')
     return parser
 
 
-def runFSG(input):
-    inputParts = input.split('.')
-    input = '{}_converted.{}'.format(inputParts[0], inputParts[1])
+def runFSG(convFile, fsgOutputFile):
     numGraphs = int(subprocess.check_output(
-        'grep \# {} | wc -l'.format(input), shell=True).strip())
-
-    os.system('./libraries/gSpan -f {} -s 10 -i -o')
-    outFile = '{}_converted.fp'.format(inputParts[0])
+        'grep \# {} | wc -l'.format(convFile), shell=True).strip())
+    os.system('./libraries/gSpan -f {} -s 0.1 -i -o'.format(convFile))
     numFeatures = int(subprocess.check_output(
-        'grep \# {} | wc -l'.format(outFile), shell=True).strip())
-    return outFile, numGraphs, numFeatures
+        'grep \# {} | wc -l'.format(fsgOutputFile), shell=True).strip())
+    return numGraphs, numFeatures
 
 
-def getFeatures(FSGFile, numGraphs, numFeatures):
-    X = np.zeroes((numGraphs, numFeatures))
-    with open(FSGFile, 'r') as fsg:
+def convertTrain(fsgOutputFile, labelFile, numGraphs, numFeatures):
+    X = np.zeros((numGraphs, numFeatures))
+    with open(fsgOutputFile, 'r') as fsg:
         i = 0
         for line in fsg:
             if line.startswith('x'):
@@ -40,12 +34,21 @@ def getFeatures(FSGFile, numGraphs, numFeatures):
                     X[graph][i] = 1
                 i += 1
             continue
-    return X
+    with open(labelFile, 'r') as lf:
+        Y = map(lambda x: int(x.strip()), lf.readlines())
+    return X, Y
 
 
 def Run(args):
-    FSGFile, numGraphs, numFeatures = runFSG(args['train'])
-    X = getFeatures(FSGFile, numGraphs, numFeatures)
+    trainParts = args['train'].split('.')
+    convFile = '{}_converted.{}'.format(trainParts[0], trainParts[1])
+    fsgOutputFile = '{}.fp'.format(convFile)
+    labelFile = '{}_labels.{}'.format(trainParts[0], trainParts[1])
+
+    numGraphs, numFeatures = runFSG(convFile, fsgOutputFile)
+    X_train, Y_train = convertTrain(
+        fsgOutputFile, labelFile, numGraphs, numFeatures)
+
     # TODO - look into labelling test set
 
 
