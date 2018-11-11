@@ -1,8 +1,6 @@
 import os
 import sys
 import argparse
-from timeit import timeit
-from matplotlib import pyplot as plt
 
 
 def getParser():
@@ -28,12 +26,12 @@ def getLabels(activeFile, inactiveFile):
     return activeIDs, inactiveIDs
 
 
-def convert(inputFile, outputFile, labelFile, activeIDs, inactiveIDs):
+def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs):
     chkID = False
     if len(activeIDs) > 0 and len(inactiveIDs) > 0:
         chkID = True
-    with open(inputFile, 'r') as inFile, open(outputFile, 'w+') as outFile, open(labelFile, 'w+') as labFile:
-        lines = inFile.readlines()
+    with open(inFile, 'r') as inF, open(outFile, 'w+') as outF, open(labelFile, 'w+') as labF:
+        lines = inF.readlines()
         i, currID, labels, maxlab = 0, 0, {}, 0
         while (i < len(lines)):
             graphID = lines[i][1:].strip()
@@ -42,12 +40,12 @@ def convert(inputFile, outputFile, labelFile, activeIDs, inactiveIDs):
                 while i < len(lines) and not(lines[i].startswith('#')):
                     i += 1
             else:
-                outFile.write('t # {}\n'.format(currID))
+                outF.write('t # {}\n'.format(currID))
                 if chkID:
                     if graphID in activeIDs:
-                        labFile.write('1\n')
+                        labF.write('1\n')
                     else:
-                        labFile.write('-1\n')
+                        labF.write('-1\n')
                 currID += 1
 
                 V = int(lines[i + 1].strip())
@@ -58,19 +56,19 @@ def convert(inputFile, outputFile, labelFile, activeIDs, inactiveIDs):
                         labels[label] = maxlab
                         maxlab += 1
                     label = labels[label]
-                    outFile.write('v {} {}\n'.format(j, label))
+                    outF.write('v {} {}\n'.format(j, label))
                 i += V
 
                 E = int(lines[i].strip())
                 i += 1
                 for j in xrange(E):
-                    outFile.write('e {}'.format(lines[i + j]))
+                    outF.write('e {}'.format(lines[i + j]))
                 i += E
 
 
 def Run(args):
     if args['outFile'] == "":
-        inFileParts = args['inFile'].split('/')[-1].split('.')
+        inFileParts = args['inFile'].split('.')
         args['outFile'] = '{}_converted.{}'.format(
             inFileParts[0], inFileParts[1])
         labelFile = '{}_labels.{}'.format(
