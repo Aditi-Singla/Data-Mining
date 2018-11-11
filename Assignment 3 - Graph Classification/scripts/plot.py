@@ -24,7 +24,7 @@ def getTimes(input, supports=[5, 10, 25, 50, 95]):
         gSpanTimes.append(timeit(stmt="os.system('./libraries/gSpan -s {} -f {}')".format(
             (support * 1.0) / 100.0, input), setup="import os", number=1))
         FSGTimes.append(timeit(stmt="os.system('./libraries/fsg -s {} {}')".format(support,
-            '{}_fsg.{}'.format(inputParts[0], inputParts[1])), setup="import os", number=1))
+                                                                                   '{}_fsg.{}'.format(inputParts[0], inputParts[1])), setup="import os", number=1))
         GastonTimes.append(timeit(stmt="os.system('./libraries/gaston {} {}')".format(
             (support * int(round(total))) / 100.0, input), setup="import os", number=1))
     return gSpanTimes, FSGTimes, GastonTimes

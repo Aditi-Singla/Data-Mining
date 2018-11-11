@@ -4,8 +4,6 @@ import argparse
 import subprocess
 import numpy as np
 import networkx as nx
-from timeit import timeit
-from matplotlib import pyplot as plt
 from networkx.algorithms import isomorphism
 
 
@@ -18,12 +16,12 @@ def getParser():
 
 
 def runFSG(convFile, fsgOutputFile):
-    numGraphs = int(subprocess.check_output(
+    numTrainGraphs = int(subprocess.check_output(
         'grep \# {} | wc -l'.format(convFile), shell=True).strip())
-    os.system('./libraries/gSpan -f {} -s 0.7 -i -o'.format(convFile))
+    os.system('./libraries/gSpan -f {} -s 0.1 -i -o'.format(convFile))
     numFeatures = int(subprocess.check_output(
         'grep \# {} | wc -l'.format(fsgOutputFile), shell=True).strip())
-    return numGraphs, numFeatures
+    return numTrainGraphs, numFeatures
 
 
 def convGraphStr(graphStr):
@@ -40,13 +38,13 @@ def convGraphStr(graphStr):
     return graph
 
 
-def readFSGFile(fsgOutputFile, labelFile, numGraphs, numFeatures):
+def getTrainVectors(fsgOutputFile, labelFile, numGraphs, numFeatures):
     X = np.zeros((numGraphs, numFeatures))
     FSG = []
-    with open(fsgOutputFile, 'r') as fsg:
+    with open(fsgOutputFile, 'r') as fsgF:
         i = 0
         currGraphStr = ""
-        for line in fsg:
+        for line in fsgF:
             if line.startswith('x'):
                 for graph in map(int, line[2:].strip().split()):
                     X[graph][i] = 1
@@ -63,19 +61,50 @@ def readFSGFile(fsgOutputFile, labelFile, numGraphs, numFeatures):
     return X, Y, FSG
 
 
+def getTestVectors(testConvFile, FSG):
+    numGraphs = int(subprocess.check_output(
+        'grep \# {} | wc -l'.format(testConvFile), shell=True).strip())
+    X = np.zeros((numGraphs, len(FSG)))
+    with open(testConvFile, 'r') as testConvF:
+        i = 0
+        currGraphStr = ""
+        for line in testConvF:
+            if line.startswith('t'):
+                if currGraphStr != "":
+                    testGraph = convGraphStr(currGraphStr)
+                    for j in xrange(len(FSG)):
+                        GM = isomorphism.GraphMatcher(testGraph, FSG[j])
+                        if GM.subgraph_is_isomorphic():
+                            X[i][j] = 1
+                    i += 1
+                currGraphStr = ""
+            else:
+                currGraphStr += line
+    return X
+
+
 def Run(args):
     trainParts = args['train'].split('.')
     convFile = '{}_converted.{}'.format(trainParts[0], trainParts[1])
     fsgOutputFile = '{}.fp'.format(convFile)
     labelFile = '{}_labels.{}'.format(trainParts[0], trainParts[1])
 
-    numGraphs, numFeatures = runFSG(convFile, fsgOutputFile)
-    X_train, Y_train, FSG = readFSGFile(
-        fsgOutputFile, labelFile, numGraphs, numFeatures)
+    numTrainGraphs, numFeatures = runFSG(convFile, fsgOutputFile)
+    X_train, Y_train, FSG = getTrainVectors(
+        fsgOutputFile, labelFile, numTrainGraphs, numFeatures)
 
-    # TODO - look into labelling test set
-    GM = isomorphism.GraphMatcher(FSG[5], FSG[2])
-    print GM.subgraph_is_isomorphic()
+    testParts = args['test'].split('.')
+    trainConvFile = '{}_converted.{}'.format(testParts[0], testParts[1])
+    X_test = getTestVectors(trainConvFile, FSG)
+   
+    from collections import defaultdict
+    d = defaultdict(int)
+    for row in X_test:
+        d[sum(row)] += 1
+    print d
+
+    # GM = isomorphism.GraphMatcher(FSG[5], FSG[2])
+    # print GM.subgraph_is_isomorphic()
 
 
 if __name__ == '__main__':
