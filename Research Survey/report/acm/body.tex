@@ -45,7 +45,44 @@ The feature-evolution setting can be described as follows: Given a data stream $
 Due to the feature evolving nature of the stream, the set of points need to be in memory all the time. Given the fact that new features can be added, the space allocation for the data points can't be bounded before hand and hence is challenging. Also, the feature updates need to be fast and efficient. \\
 
 The algorithm proposed by the authors is a constant space and constant time per update algorithm which combines ideas from subspace partitioning and ensembling while incorporating the feature evolving nature of the input stream. The details of the algorithm along with the advantages and disadvantages of ensembling and partitioning based techniques, will be discussed in the further sections.
-%\end{document}  % This is where a 'short' article might terminate
+
+\section{Related work}
+
+\subsection{Distance based outlier detection}
+
+Many of the early approaches towards anomaly detection in data streams, employ distance based methods. These distance based approaches take into account, the mutual distance of points, in the dataset, to identify outliers as a bi-product of clustering. \\
+
+However, the outlier detection algorithms outlined above face issues due to sparsity and curse of dimensionality. In an attempt to formulate the algorithms to overcome the above mentioned issues, Aggarwal et al utilise the idea of projecting the data onto the smaller dimensions\cite{aggarwal2001outlier} and propose exact and approximate algorithms, based on the same. \\
+
+A key challenge to address in this approach is to define the semantics associated with a point being an outlier, in a subspace of the original dataset, besides being computationally efficient. \\
+
+\noindent \textbf{Outliers in low dimensional projections} \\
+
+In order to overcome the shortcomings of a high number of dimensions, they project the data points onto a lower dimensional space. Every attribute in the dataset is divided into several equi-depth ranges, dividing the complete space into cubes of different dimensions. \\ 
+
+Now, they select ranges from $k$ different dimensions and consider the resulting $k$ - dimensional cubes formed. The idea is to identify the most sparse of such $k$ - dimensional cubes. In order to calculate how sparse the cubes are, Aggarwal et al define a metric, called the \textit{sparsity coefficient}, to identify the extent of deviation in the actual number of points within a cube, from its probabilistic estimate. \\
+
+Let us assume that every attribute is divided into $r$ equi-depth ranges. Then, because of this being an equi-depth split, each range gets $f\ =\ 1/r$ fraction of the points. Now, is the distribution of points had been $independent$ and $uniform$, then, a $k$ - dimensional cube as described by the authors, would have contained a point with a probability $f^k$ which is Bernoulli distributed. \\
+
+Considering that the dataset consists of $N$ points, the estimated number of points inside a $k$ - dimensional cube becomes a Normal distributed random variable (by the application of the central limit theorem), with a mean $N.f^k$ and variance $N.f^k.(1-f^k)$. Thus, the \textit{sparsity coefficient} is defined as,
+
+$$s = (n - N.f^k)/(N.f^k.(1-f^k))^{0.5}$$
+
+Given this, the problem finding outliers becomes that of finding the cubes with elements having the most negative sparsity coefficients. This search can be conducted in a simple brute force fashion or using evolutionary algorithms described by the authors and discussed below, in brief. \\
+
+\noindent \textbf{Evolutionary algorithms for Outlier Detection} \\
+
+The key idea here is to encode the information into strings and then use suitable crossover techniques to generate fitter and fitter strings, where the $fitness$ is defined using a suitable fitness function. \\
+
+For every dimension, the grid range is encoded as a number between $1$ and $r$, where $r$ is the number of equi-depth ranges as described above, or a $*$ to denote a don't care. The sparsity coefficient is used as the fitness function, to evaluate the fitness of the cube, which is encoded cube represents. The sampling probability of a particular string, representing a cube, is a function of how negative is the sparsity coefficient for that cube. \\
+
+The encoding and the fitness function, described above, are used in conjunction with a simple $two\ point\ crossover$ technique where a random crossover point is chosen for 2 strings and their right parts are crossed over. In this way, the search is carried out until a fixed number of iterations or until the set of outliers stops changing for a specified number of pre-determined iterations. \\
+
+The outlier detection algorithm described in this section essentially uses the idea of projection of points on lower dimensional subspaces while preserving the semantics of being an outlier. The idea of choosing the $k$ - dimensional cube with the most negative sparsity coefficient, is in some way, an attempt to choose a set of attributes out of the large number of dimensions, which best preserve the semantics associated with the outlier points. \\
+
+The latter idea has been explored further as the $ensemble$ based methods gained popularity in the machine learning community. The former idea has also been explored by various authors while proposing various outlier detection techniques based on $subspace$ $partitioning$. Both these techniques have been discussed in significant detail, in the subsequent sections.
+
+% This is where a 'short' article might terminate
 
 
 
