@@ -5,7 +5,10 @@ import subprocess
 import numpy as np
 import networkx as nx
 from networkx.algorithms import isomorphism
+from collections import defaultdict
 
+ACTIVE_LABEL = 1
+INACTIVE_LABEL = 2
 
 def getParser():
     parser = argparse.ArgumentParser(
@@ -81,6 +84,36 @@ def getTestVectors(testConvFile, FSG):
             else:
                 currGraphStr += line
     return X
+
+def getTopKDiscriminativeFeatures(X_train, Y_train, k):
+    numActive = 0.0
+    numInactive = 0.0
+
+    for i in Y_train:
+        if i == ACTIVE_LABEL:
+            numActive += 1
+        else:
+            numInactive += 1
+
+    featureFreqActive = defaultdict(int)
+    featureFreqInactive = defaultdict(int)
+
+    for i in range(len(X_train)):
+        for j in range(len(X_train[i])):
+            if X_train[i][j] == 1:
+                if Y_train[i] == ACTIVE_LABEL:
+                    featureFreqActive[i] = (featureFreqActive[i] + 1)
+                else:
+                    featureFreqInactive[i] = (featureFreqInactive[i] + 1)
+
+    diffList = []
+
+    for i in range(len(X_train[0])):
+        diffList.append((i, abs(featureFreqActive[i]/numActive - featureFreqInactive[i]/numInactive)))
+
+    sorted(diffList, key = lambda x: x[1])
+
+    return diffList[-k:]
 
 
 def Run(args):
