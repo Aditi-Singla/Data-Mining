@@ -45,7 +45,7 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs):
                     if graphID in activeIDs:
                         labF.write('1\n')
                     else:
-                        labF.write('-1\n')
+                        labF.write('2\n')
                 currID += 1
 
                 V = int(lines[i + 1].strip())

@@ -4,11 +4,12 @@ import argparse
 import subprocess
 import numpy as np
 import networkx as nx
-from networkx.algorithms import isomorphism
 from collections import defaultdict
+from networkx.algorithms import isomorphism as iso
 
 ACTIVE_LABEL = 1
 INACTIVE_LABEL = 2
+
 
 def getParser():
     parser = argparse.ArgumentParser(
@@ -21,7 +22,7 @@ def getParser():
 def runFSG(convFile, fsgOutputFile):
     numTrainGraphs = int(subprocess.check_output(
         'grep \# {} | wc -l'.format(convFile), shell=True).strip())
-    os.system('./libraries/gSpan -f {} -s 0.1 -i -o'.format(convFile))
+    os.system('./libraries/gSpan -f {} -s 0.2 -i -o'.format(convFile))
     numFeatures = int(subprocess.check_output(
         'grep \# {} | wc -l'.format(fsgOutputFile), shell=True).strip())
     return numTrainGraphs, numFeatures
@@ -37,7 +38,8 @@ def convGraphStr(graphStr):
             edges.append(line[2:].split())
     graph = nx.Graph()
     graph.add_nodes_from(map(lambda x: (int(x[0]), {'label': x[1]}), vertices))
-    graph.add_edges_from(map(lambda x: (int(x[0]), int(x[1]), {'label': x[2]}), edges))
+    graph.add_edges_from(
+        map(lambda x: (int(x[0]), int(x[1]), {'label': x[2]}), edges))
     return graph
 
 
@@ -60,11 +62,11 @@ def getTrainVectors(fsgOutputFile, labelFile, numGraphs, numFeatures):
                 currGraphStr += line
 
     with open(labelFile, 'r') as lf:
-        Y = map(lambda x: int(x.strip()), lf.readlines())
+        Y = list(map(lambda x: int(x.strip()), lf.readlines()))
     return X, Y, FSG
 
 
-def getTestVectors(testConvFile, FSG):
+def getTestVectors(testConvFile, labelFile, FSG):
     numGraphs = int(subprocess.check_output(
         'grep \# {} | wc -l'.format(testConvFile), shell=True).strip())
     X = np.zeros((numGraphs, len(FSG)))
@@ -75,20 +77,23 @@ def getTestVectors(testConvFile, FSG):
             if line.startswith('t'):
                 if currGraphStr != "":
                     testGraph = convGraphStr(currGraphStr)
-                    for j in xrange(len(FSG)):
-                        GM = isomorphism.GraphMatcher(testGraph, FSG[j])
+                    for j in range(len(FSG)):
+                        GM = iso.GraphMatcher(
+                            testGraph, FSG[j], node_match=lambda x, y: x['label'] == y['label'], edge_match=lambda x, y: x['label'] == y['label'])
                         if GM.subgraph_is_isomorphic():
                             X[i][j] = 1
                     i += 1
                 currGraphStr = ""
             else:
                 currGraphStr += line
-    return X
+    with open(labelFile, 'r') as lf:
+        Y = list(map(lambda x: int(x.strip()), lf.readlines()))
+    return X, Y
+
 
 def getTopKDiscriminativeFeatures(X_train, Y_train, k):
     numActive = 0.0
     numInactive = 0.0
-
     for i in Y_train:
         if i == ACTIVE_LABEL:
             numActive += 1
@@ -97,23 +102,32 @@ def getTopKDiscriminativeFeatures(X_train, Y_train, k):
 
     featureFreqActive = defaultdict(int)
     featureFreqInactive = defaultdict(int)
-
     for i in range(len(X_train)):
         for j in range(len(X_train[i])):
             if X_train[i][j] == 1:
                 if Y_train[i] == ACTIVE_LABEL:
-                    featureFreqActive[i] = (featureFreqActive[i] + 1)
+                    featureFreqActive[i] += 1
                 else:
-                    featureFreqInactive[i] = (featureFreqInactive[i] + 1)
+                    featureFreqInactive[i] += 1
 
     diffList = []
-
     for i in range(len(X_train[0])):
-        diffList.append((i, abs(featureFreqActive[i]/numActive - featureFreqInactive[i]/numInactive)))
+        diffList.append(
+            (i, abs(featureFreqActive[i]/numActive - featureFreqInactive[i]/numInactive)))
+    cols, freq = zip(*(sorted(diffList, key=lambda x: -x[1])[:k]))
+    return cols
 
-    sorted(diffList, key = lambda x: x[1])
 
-    return diffList[-k:]
+def libSVMformat(X, Y, out_file):
+    with open(out_file, 'w') as out:
+        for i in range(len(X)):
+            out.write(str(Y[i]))
+            for j in range(1, len(X[i])+1):
+                if X[i][j-1] != 0:
+                    out.write(str(' '))
+                    out.write(str(j)+':'+str(X[i][j-1]))
+            if (i < len(X)-1):
+                out.write('\n')
 
 
 def Run(args):
@@ -127,17 +141,15 @@ def Run(args):
         fsgOutputFile, labelFile, numTrainGraphs, numFeatures)
 
     testParts = args['test'].split('.')
-    trainConvFile = '{}_converted.{}'.format(testParts[0], testParts[1])
-    X_test = getTestVectors(trainConvFile, FSG)
-   
-    from collections import defaultdict
-    d = defaultdict(int)
-    for row in X_test:
-        d[sum(row)] += 1
-    print d
+    testConvFile = '{}_converted.{}'.format(testParts[0], testParts[1])
+    testLabelFile = '{}_labels.{}'.format(trainParts[0], trainParts[1])
 
-    # GM = isomorphism.GraphMatcher(FSG[5], FSG[2])
-    # print GM.subgraph_is_isomorphic()
+    cols = getTopKDiscriminativeFeatures(X_train, Y_train, 100)
+    X_train, FSG = X_train[:, cols], np.array(FSG).take(cols)
+    X_test, Y_test = getTestVectors(testConvFile, testLabelFile, FSG)
+
+    libSVMformat(X_train, Y_train, 'train.txt')
+    libSVMformat(X_test, Y_test, 'test.txt')
 
 
 if __name__ == '__main__':
