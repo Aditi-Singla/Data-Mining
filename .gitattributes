@@ -1,0 +1,6 @@
+*.cls linguist-vendored
+*.bst linguist-vendored
+*.bbx linguist-vendored
+*.cbx linguist-vendored
+*.dbx linguist-vendored
+*.cut linguist-vendored
