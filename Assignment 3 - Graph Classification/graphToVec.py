@@ -14,9 +14,12 @@ INACTIVE_LABEL = 2
 def getParser():
     parser = argparse.ArgumentParser(
         description='Convert graphs into feature vectors')
-    parser.add_argument('train', help='Training database of graphs')
-    parser.add_argument('test', help='Testing database of graphs')
-    parser.add_argument('--support', default=0.2, type=float, help='Support threshold for gSpan')
+    parser.add_argument('trainData', help='Training database of graphs')
+    parser.add_argument('trainLabels', help='Labels of training graphs')
+    parser.add_argument('testData', help='Testing database of graphs')
+    parser.add_argument('testLabels', help='Labels of test graphs')
+    parser.add_argument('--support', default=0.2, type=float,
+                        help='Support threshold for gSpan')
     return parser
 
 
@@ -93,16 +96,14 @@ def getTestVectors(testConvFile, labelFile, FSG):
 
 
 def getTopKDiscriminativeFeatures(X_train, Y_train, k):
-    numActive = 0.0
-    numInactive = 0.0
+    numActive, numInactive = 0.0, 0.0
     for i in Y_train:
         if i == ACTIVE_LABEL:
             numActive += 1
         else:
             numInactive += 1
 
-    featureFreqActive = defaultdict(int)
-    featureFreqInactive = defaultdict(int)
+    featureFreqActive, featureFreqInactive = defaultdict(int), defaultdict(int)
     for i in range(len(X_train)):
         for j in range(len(X_train[i])):
             if X_train[i][j] == 1:
@@ -132,22 +133,16 @@ def libSVMformat(X, Y, out_file):
 
 
 def Run(args):
-    trainParts = args['train'].split('.')
-    convFile = '{}_converted.{}'.format(trainParts[0], trainParts[1])
-    fsgOutputFile = '{}.fp'.format(convFile)
-    labelFile = '{}_labels.{}'.format(trainParts[0], trainParts[1])
+    fsgOutputFile = '{}.fp'.format(args['trainData'])
     support = args['support']
-
-    numTrainGraphs, numFeatures = runFSG(convFile, fsgOutputFile, support)
+    numTrainGraphs, numFeatures = runFSG(
+        args['trainData'], fsgOutputFile, support)
     X_train, Y_train, FSG = getTrainVectors(
-        fsgOutputFile, labelFile, numTrainGraphs, numFeatures)
+        fsgOutputFile, args['trainLabels'], numTrainGraphs, numFeatures)
 
-    testParts = args['test'].split('.')
-    testConvFile = '{}_converted.{}'.format(testParts[0], testParts[1])
-    testLabelFile = '{}_labels.{}'.format(testParts[0], testParts[1])
     cols = getTopKDiscriminativeFeatures(X_train, Y_train, 100)
     X_train, FSG = X_train[:, cols], np.array(FSG).take(cols)
-    X_test, Y_test = getTestVectors(testConvFile, testLabelFile, FSG)
+    X_test, Y_test = getTestVectors(args['testData'], args['testLabels'], FSG)
 
     libSVMformat(X_train, Y_train, 'train.txt')
     libSVMformat(X_test, Y_test, 'test.txt')

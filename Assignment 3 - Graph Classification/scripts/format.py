@@ -7,8 +7,9 @@ def getParser():
     parser = argparse.ArgumentParser(
         description='Convert the input graph database into the format required by gSpan, FSG and Gaston')
     parser.add_argument('inFile', help='Input Database of graphs')
-    parser.add_argument('--outFile', default="",
-                        help='Output Database of graphs')
+    parser.add_argument('outFile', help='Output Database of graphs')
+    parser.add_argument('--labels', default="",
+                        help='Output Labels of graphs')
     parser.add_argument('--active', default="",
                         help='Active graph IDs')
     parser.add_argument('--inactive', default="",
@@ -30,7 +31,9 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs):
     chkID = False
     if len(activeIDs) > 0 and len(inactiveIDs) > 0:
         chkID = True
-    with open(inFile, 'r') as inF, open(outFile, 'w+') as outF, open(labelFile, 'w+') as labF:
+    if labelFile != "":
+        labF = open(labelFile, 'w+')
+    with open(inFile, 'r') as inF, open(outFile, 'w+') as outF:
         lines = inF.readlines()
         i, currID, labels, maxlab = 0, 0, {}, 0
         while (i < len(lines)):
@@ -41,7 +44,7 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs):
                     i += 1
             else:
                 outF.write('t # {}\n'.format(currID))
-                if chkID:
+                if chkID and labelFile != "":
                     if graphID in activeIDs:
                         labF.write('1\n')
                     else:
@@ -64,17 +67,14 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs):
                 for j in xrange(E):
                     outF.write('e {}'.format(lines[i + j]))
                 i += E
+    if labelFile != "":
+        labF.close()
 
 
 def Run(args):
-    if args['outFile'] == "":
-        inFileParts = args['inFile'].split('.')
-        args['outFile'] = '{}_converted.{}'.format(
-            inFileParts[0], inFileParts[1])
-        labelFile = '{}_labels.{}'.format(
-            inFileParts[0], inFileParts[1])
     activeIDs, inactiveIDs = getLabels(args['active'], args['inactive'])
-    convert(args['inFile'], args['outFile'], labelFile, activeIDs, inactiveIDs)
+    convert(args['inFile'], args['outFile'],
+            args['labels'], activeIDs, inactiveIDs)
 
 
 if __name__ == '__main__':

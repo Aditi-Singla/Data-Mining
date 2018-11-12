@@ -9,5 +9,5 @@ if [ -f  $TEST_FILE ]; then
     fi
     python scripts/plot.py $TEST_FILE --supports 5 10 25 50 95
 else
-    echo "Can't find data/"$1".txt"
+    echo "Can't find $TEST_FILE"
 fi 
