@@ -5,6 +5,8 @@ import subprocess
 import numpy as np
 import networkx as nx
 from collections import defaultdict
+from sklearn.preprocessing import normalize
+from sklearn import feature_selection as select
 from networkx.algorithms import isomorphism as iso
 
 ACTIVE_LABEL = 1
@@ -95,7 +97,7 @@ def getTestVectors(testConvFile, labelFile, FSG):
     return X, Y
 
 
-def getTopKDiscriminativeFeatures(X_train, Y_train, k):
+def getFrequencyMaps(X_train, Y_train):
     numActive, numInactive = 0.0, 0.0
     for i in Y_train:
         if i == ACTIVE_LABEL:
@@ -103,22 +105,43 @@ def getTopKDiscriminativeFeatures(X_train, Y_train, k):
         else:
             numInactive += 1
 
-    featureFreqActive, featureFreqInactive = defaultdict(int), defaultdict(int)
+    numActive = sum([1 for y in Y_train if y == 1])
+    numInactive = len(X_train) - numActive
+    featFreqActive, featFreqInactive = defaultdict(int), defaultdict(int)
     for i in range(len(X_train)):
         for j in range(len(X_train[i])):
             if X_train[i][j] == 1:
                 if Y_train[i] == ACTIVE_LABEL:
-                    featureFreqActive[i] += 1
+                    featFreqActive[i] += (1.0 / numActive)
                 else:
-                    featureFreqInactive[i] += 1
+                    featFreqInactive[i] += (1.0 / numInactive)
+    return featFreqActive, featFreqInactive
 
+
+def getTopKDiscriminativeFeatures(numFeatures, featFreqActive, featFreqInactive, k=100):
     diffList = []
-    for i in range(len(X_train[0])):
-        diffList.append(
-            (i, abs(featureFreqActive[i] / numActive - featureFreqInactive[i] / numInactive)))
+    for i in range(numFeatures):
+        diffList.append((i, abs(featFreqActive[i] - featFreqInactive[i])))
     cols, freq = zip(*(sorted(diffList, key=lambda x: -x[1])[:k]))
+    # return select.SelectKBest(select.mutual_info_classif, k=k).fit(X_train, Y_train).get_support()
     return cols
 
+
+def idfTransform(X_train, featFreqActive, featFreqInactive):
+    numFeatures = len(X_train[0])
+    for i in range(len(X_train)):
+        for j in range(numFeatures):
+            if X_train[i][j] == 1 and (featFreqActive[j] + featFreqInactive[j]):
+                # X_train = 0
+                # if featFreqActive[j]:
+                #     X_train += 1.0 / featFreqActive[j]
+                # if featFreqInactive[j]:
+                #     X_train -= 1.0 / featFreqInactive[j]
+                X_train[i][j] = 1.0 / (featFreqActive[j] + featFreqInactive[j])
+            else:
+                X_train[i][j] = 0
+    return normalize(X_train, axis=1, norm='l2')
+    
 
 def libSVMformat(X, Y, out_file):
     with open(out_file, 'w') as out:
@@ -140,9 +163,13 @@ def Run(args):
     X_train, Y_train, FSG = getTrainVectors(
         fsgOutputFile, args['trainLabels'], numTrainGraphs, numFeatures)
 
-    cols = getTopKDiscriminativeFeatures(X_train, Y_train, 100)
+    featFreqActive, featFreqInactive = getFrequencyMaps(X_train, Y_train)
+    cols = getTopKDiscriminativeFeatures(numFeatures, featFreqActive, featFreqInactive, 100)
     X_train, FSG = X_train[:, cols], np.array(FSG).take(cols)
+    # X_train = idfTransform(X_train, featFreqActive, featFreqInactive)
+    
     X_test, Y_test = getTestVectors(args['testData'], args['testLabels'], FSG)
+    # X_test = idfTransform(X_test, featFreqActive, featFreqInactive)
 
     libSVMformat(X_train, Y_train, 'train.txt')
     libSVMformat(X_test, Y_test, 'test.txt')
