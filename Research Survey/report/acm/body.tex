@@ -112,9 +112,29 @@ Lastly, the choice of combination function is also important based on the semant
 
 \subsection{Partitioning based outlier detection}
 
-Streams have outlier samples in rarity and can evolve over time, besides being on potentially infinite length. Partitioning based techniques\cite{tan2011fast} essentially construct an ensemble of trees which perform semi supervised, one-class detection of the rare outliers. These techniques attempt to detect outliers by capturing the density of points in multiple different partitions of the subspaces. The key idea to be able to incorporate for the evolving nature of the streams, is to maintain contiguous, latest and reference windows, to perform outlier detection on the unseen data while updating the reference model atomically with the latest one, after the latest window ends. \\
+We have already discussed about the infinite length of the data streams which makes it infeasible to load the data in memory and perform anomaly detection. Besides that, the presence of outliers in streams is rare i.e most of the data samples in a stream are not outliers. An important observation here is that due this rarity of outliers, the scenario of training classifiers for anomaly detection can be considered as an semi supervised learning setting, where the training data or the labels corresponding to the outliers are not always available at the time of training. \\
 
-The algorithm proposed by the authors is a constant space and constant time per update algorithm which combines ideas from subspace partitioning and ensembling while incorporating the feature evolving nature of the input stream. The details of the algorithm along with the advantages and disadvantages of ensembling and partitioning based techniques, will be discussed in the further sections.
+The most important aspect which is addressed in this section is the idea of evolving streams, where the data evolves over time and hence might lead to a change in the definition of what properties make a data point qualify to be an outlier. Much of the work discussed previously does not address this issue related to time evolving data. \\
+
+Tan et al, in their work\cite{tan2011fast}, outline the construction of an ensemble of trees, called $streaming\ half\ space\ chains$, which perform semi supervised, one-class detection of the rare outliers. These attempt to detect outliers by capturing the density of points in multiple different partitions of the subspaces. As opposed to other outlier detection algorithms, this model processes the data in a single pass. Another advantage of this model is that the construction of trees happens before the data processing, essentially making this model data independent. \\
+
+To incorporate the time evolving nature of the data, the authors introduce the concept of a window. Two windows called the $current$ and the $reference$ windows are maintained to capture the time varying nature of the stream. At any given time, the $reference$ window is used to classify the incoming data samples into outliers or otherwise. However, the incoming samples are also maintained in the $current$ window to capture the density profile of this incoming data. As the $current$ window becomes full, it replaces the reference window and is subsequently used for classification, while the new $current$ window resumes the task of learning. \\
+
+\noindent \textbf{Construction of Half Space Trees} \\
+
+A set of nodes forms a $Half\ Space\ Tree$ which is essentially a full binary tree. A dimension is randomly sampled at every node, belonging to its $work\ space$ and then this work space is bisected into two half spaces. This processes continues recursively down the constructed half spaces, until the tree of the desired depth is created. The job of each node is to keep track of the $mass\ profile$ of the data, in the work space which this node represents. Every node also maintains the mass profiles in the reference window and the current window, in variables called $r$ and $l$ respectively. \\
+
+Before defining the $work\ space$ corresponding to every node, the authors make an assumption that the attribute ranges are normalised to [0,1]. Given this assumption, let $s$ be a number which is generated from the interval [0,1] $uniformly\ at\ random$. A $work\ range$ of $[s\ -\ 2.max(s,1-s),\ s\ +\ 2.max(s,1-s)]$ is defined using this sampled value of $s$. This is done for every dimension. This set of work ranges for every dimension constitutes the $work\ space$ of a node. The key to the success of half space chains is that every half space tree should have a diverse set of work spaces for every node. \\
+
+\noindent \textbf{Anomaly score computation} \\
+
+The anomaly score for a half space tree is computed by considering the path which is traversed in the corresponding half space tree. The score at every node needs to be scaled according to the depth of the node in the tree as under the assumption of a uniform data distribution, such an exponential scaling would relate the mass profiles across nodes residing and different depths in the half space tree. \\ 
+
+The final score is computed as $n.r\ *\ 2^{n.k}$ where $n.r$ is the reference window count and $n.k$ is the depth at a node $n$, which is a terminal node encountered in the path taken for a data point $x$ in a half space tree $T$. While computing the score, the $n.l$ count which maintains the $current$ window count at a node $n$ encountered in a path from the root to a terminal node, also gets updated. The final ensemble score is a sum of the scores allotted by the individual half space trees. 
+
+\subsection{Feature evolving data streams}
+
+The algorithm proposed by the authors is a constant space and constant time per update algorithm which combines ideas from subspace partitioning and ensembling while incorporating the feature evolving nature of the input stream. 
 
 
 % This is where a 'short' article might terminate
