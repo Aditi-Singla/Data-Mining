@@ -76,7 +76,39 @@ The latter idea has been explored further as the $ensemble$ based methods gained
 
 Model ensembling is a technique used in machine learning, which involves training multiple models over same or different subsets of data, having same or a subset of the features and then aggregating the results of these models to obtain a stronger classifier. The components of an ensemble can be trained in a way such that they could be dependent on each other, like sequential ensembles\cite{RayanaZA16} or they could be independent of each other, like in bootstrap aggregating. \\
 
-Both sequential and independent ensembles\cite{RayanaZA16}\cite{aggarwal2013outlier} have been employed for the task of outlier detection in data streams. In data stream setting, ensembles are useful to train multiple models for the anomaly detection task.
+Both sequential and independent ensembles\cite{RayanaZA16}\cite{aggarwal2013outlier} have been employed for the task of outlier detection in data streams. In data stream setting, ensembles are useful to train multiple models for the anomaly detection task. Aggarwal et al describe the different categories of outlier ensembles and the key ideas behind their proposition\cite{aggarwal2013outlier}. \\
+
+\noindent \textbf{Classification based on component independence} \\
+
+Outlier ensembles can be broadly classified on the basis of independence of the component models in the ensemble. The component models can both be $sequential$ i.e depend on the previous model outputs for training and prediction, or can work in an $independent$ fashion, from the other component models. \\
+
+In $sequential\ ensembles$, the component algorithms for anomaly detection are applied in a sequential fashion, to incorporate the results of the algorithm which was previously applied. These type of ensembles begin with simpler classifiers and boost their accuracy by sequentially applying classification algorithms, to build stronger classifiers. This approach is popularly known as $boosting$, in machine learning literature. The final output of the ensemble can be computed in multiple ways. It can either be a weighted combination of the outputs of the component models, or just the output of the final model. \\
+
+An example of a sequential ensemble is a two phase algorithm which the authors have outlined and discussed in the paper. In this approach, the first phase is to remove the data points which can be trivially considered as outlier points. The subsequent phase is to construct a more robust classifier for a refined outlier detection. Here, the output of the second model is considered as the ensemble output, as the second modeled works on a refined version of the dataset. \\
+
+Another idea is to explore subspaces of data which are capable of pronounced discriminative behaviour. Once a subspace of data is identified to be sufficiently able to discriminate between the outlier data points from the other data points, it is recursively explored further. This is a natural setting where sequential ensembles are put to use, to identify discriminative subspaces of an already sufficiently discriminative subspace. Here however, the scoring function should incorporate the scores obtained from the models trained on the subspaces considered and hence is a combination of the outputs of the component models. \\
+
+$Independent\ ensembles$ are the ones where multiple independent component models are trained either on the full dataset or a subset of it, with their outputs being combined using a suitable method. The idea here is to use every component model to extract information related to a subset of the feature space, a subset of the data, or just train different models over the entire dataset and feature space and combine their results. \\
+
+\noindent \textbf{Classification based on constituent components} \\
+
+The ensembles can also be classified based on the working of their component models. As has been pointed out earlier, the component models could work on a subset of the data, a subspace of the entire feature space or the entire dataset and the feature space, where each of the component models are different. \\
+
+$Model\ centered$ ensembles are ones where multiple classification models are trained on the entire dataset and combine their scores. The idea here is to utilise the strengths of the different models to detect outliers and take incorporate the output of each model while calculating the final score. This type of an approach is popularly used to train a classifier where the same component algorithm is instantiated multiple times, with different parameters and run on the same dataset. \\
+
+A key challenge in this scenario is combination of the outputs of the component models, to compute the final score. The model outputs need to be normalised and should have same semantic meaning, before the combination. The challenges have been further elaborated in the next section. \\
+
+Examples of such ensembles include LOF methods, where multiple nearest neighbour classifiers are trained with a different neighbourhood size. Another example is the LOCI method, which makes use of a sampled neighbourhood, varying the sample size across the different component models, coupled with a $best-fit$ combination. \\
+
+In $data\ centered$ ensembles, subsets of the dataset are explored keeping the model same, across the ensemble components. The subsets can be constructed by either considering $horizontal\ partitions$ of the dataset, where a subset of the data samples are considered for training by every model, or considering a $vertical\ partition$ of the dataset, by considering a subset of features for all the data points. A popular example of such a partition is $feature\ bagging$ where different feature subspaces are sampled using statistical methods and the LOF score is computed over each subspace. The scores are then combined using softmax, to assign the final outlier scores. \\
+
+\noindent \textbf{Normalisation and combination of model scores} \\
+
+An important component of the ensemble techniques is the normalisation technique used to normalise the component model scores. Normalisation is necessary as different models output scores which can range from probabilities to absolute scores where a higher score can mean that the corresponding sample is more likely to be an outlier, or vice versa. \\ 
+
+An idea which the authors propose is to convert the model scores into probabilities, with the underlying assumption that the data points and the outliers are sampled from the same probability distribution, whose parameters can be learned using expectation maximisation, as is done in many unsupervised ML models, used for clustering, like Gaussian Mixture Models etc. \\
+
+Lastly, the choice of combination function is also important based on the semantics associated with the component models of the ensemble. Popularly used combination functions include max, min, average, weighted average or the last model's output. Average functions are known to dilute the individual model scores and hence the authors caution against their use unless the component models are also selected keeping this consideration in mind. 
 
 \subsection{Partitioning based outlier detection}
 
