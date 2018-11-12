@@ -22,7 +22,8 @@ def getLabels(activeFile, inactiveFile):
     return activeIDs, inactiveIDs
 
 
-def convert(inFile, trainFile, trainActFile, trainInactFile, testFile, testLabelFile, activeIDs, inactiveIDs):
+def convert(inFile, trainFile, trainActFile, trainInactFile,
+            testFile, testLabelFile, activeIDs, inactiveIDs):
     with open(inFile, 'r') as inF, open(trainFile, 'w+') as trainF, open(trainActFile, 'w+') as trainActF, open(trainInactFile, 'w+') as trainInactF, open(testFile, 'w+') as testF, open(testLabelFile, 'w+') as testLabelF:
         lines = inF.readlines()
         i, currID, labels, maxlab = 0, 0, {}, 0

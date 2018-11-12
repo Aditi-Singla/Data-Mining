@@ -25,7 +25,7 @@ def Run(args):
     actualLabelFile = args['actual']
     predictedLabelFile = args['predicted']
     fscore = fScore(actualLabelFile, predictedLabelFile)
-    print ("F-Score =", fscore)
+    print("F-Score : {}".format(fscore))
 
 
 if __name__ == '__main__':

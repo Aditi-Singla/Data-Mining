@@ -115,7 +115,7 @@ def getTopKDiscriminativeFeatures(X_train, Y_train, k):
     diffList = []
     for i in range(len(X_train[0])):
         diffList.append(
-            (i, abs(featureFreqActive[i]/numActive - featureFreqInactive[i]/numInactive)))
+            (i, abs(featureFreqActive[i] / numActive - featureFreqInactive[i] / numInactive)))
     cols, freq = zip(*(sorted(diffList, key=lambda x: -x[1])[:k]))
     return cols
 
@@ -124,11 +124,11 @@ def libSVMformat(X, Y, out_file):
     with open(out_file, 'w') as out:
         for i in range(len(X)):
             out.write(str(Y[i]))
-            for j in range(1, len(X[i])+1):
-                if X[i][j-1] != 0:
+            for j in range(1, len(X[i]) + 1):
+                if X[i][j - 1] != 0:
                     out.write(str(' '))
-                    out.write(str(j)+':'+str(X[i][j-1]))
-            if (i < len(X)-1):
+                    out.write(str(j) + ':' + str(X[i][j - 1]))
+            if (i < len(X) - 1):
                 out.write('\n')
 
 

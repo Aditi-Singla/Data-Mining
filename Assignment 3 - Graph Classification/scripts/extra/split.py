@@ -21,7 +21,8 @@ def split(inFile, numTestSamples, numTrainSamples):
     testSamples = 0
     with open(inFile, 'r') as inF, open(testFile, 'w+') as testF, open(activeFile, 'w+') as actF, open(inactiveFile, 'w+') as inactF:
         for line in inF:
-            if numTrainSamples > 0 and numTrainSamples % 2 == 0 and line.startswith('#'):
+            if numTrainSamples > 0 and numTrainSamples % 2 == 0 and line.startswith(
+                    '#'):
                 actF.write(line[1:])
                 numTrainSamples -= 1
             elif numTrainSamples >= 0 and numTrainSamples % 2 == 1 and line.startswith('#'):

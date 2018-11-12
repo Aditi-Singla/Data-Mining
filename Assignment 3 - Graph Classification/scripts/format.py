@@ -53,7 +53,7 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs):
 
                 V = int(lines[i + 1].strip())
                 i += 2
-                for j in xrange(V):
+                for j in range(V):
                     label = lines[i + j]
                     if not(label in labels):
                         labels[label] = maxlab
@@ -64,7 +64,7 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs):
 
                 E = int(lines[i].strip())
                 i += 1
-                for j in xrange(E):
+                for j in range(E):
                     outF.write('e {}'.format(lines[i + j]))
                 i += E
     if labelFile != "":
