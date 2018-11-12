@@ -16,13 +16,14 @@ def getParser():
         description='Convert graphs into feature vectors')
     parser.add_argument('train', help='Training database of graphs')
     parser.add_argument('test', help='Testing database of graphs')
+    parser.add_argument('--support', default=0.2, type=float, help='Support threshold for gSpan')
     return parser
 
 
-def runFSG(convFile, fsgOutputFile):
+def runFSG(convFile, fsgOutputFile, support):
     numTrainGraphs = int(subprocess.check_output(
         'grep \# {} | wc -l'.format(convFile), shell=True).strip())
-    os.system('./libraries/gSpan -f {} -s 0.2 -i -o'.format(convFile))
+    os.system('./libraries/gSpan -f {} -s {} -i -o'.format(convFile, support))
     numFeatures = int(subprocess.check_output(
         'grep \# {} | wc -l'.format(fsgOutputFile), shell=True).strip())
     return numTrainGraphs, numFeatures
@@ -135,15 +136,15 @@ def Run(args):
     convFile = '{}_converted.{}'.format(trainParts[0], trainParts[1])
     fsgOutputFile = '{}.fp'.format(convFile)
     labelFile = '{}_labels.{}'.format(trainParts[0], trainParts[1])
+    support = args['support']
 
-    numTrainGraphs, numFeatures = runFSG(convFile, fsgOutputFile)
+    numTrainGraphs, numFeatures = runFSG(convFile, fsgOutputFile, support)
     X_train, Y_train, FSG = getTrainVectors(
         fsgOutputFile, labelFile, numTrainGraphs, numFeatures)
 
     testParts = args['test'].split('.')
     testConvFile = '{}_converted.{}'.format(testParts[0], testParts[1])
-    testLabelFile = '{}_labels.{}'.format(trainParts[0], trainParts[1])
-
+    testLabelFile = '{}_labels.{}'.format(testParts[0], testParts[1])
     cols = getTopKDiscriminativeFeatures(X_train, Y_train, 100)
     X_train, FSG = X_train[:, cols], np.array(FSG).take(cols)
     X_test, Y_test = getTestVectors(testConvFile, testLabelFile, FSG)
