@@ -28,23 +28,13 @@ The existing algorithms and techniques for data streams fail to work for feature
 
 \section{Problem formulation}
 
-The problem we are looking at essentially, is as follows: Given a data stream $D = \{x1, x2, ....\}$, we want to identify the outlier data points. \\
+The problem we are looking at essentially, is as follows: Given a data stream $D = \{x1, x2, ....\}$, we want to identify the data points, which are outliers. In the preliminary version of the problem, we assume the number of dimensions of every data item as a constant, say $k$.\\
 
-There have been various techniques\cite{tran2016distance}\cite{tan2011fast}\cite{aggarwal2013outlier} which have been proposed to deal with the streaming nature of the data. Among the most popular ones are the ensemble based techniques and subspace partitioning based techniques. \\ 
-
-\subsection{Ensemble based techniques}
-
-Ensemble based techniques\cite{aggarwal2013outlier} have gained popularity after their performance in supervised setting of classification in machine learning. The idea behind ensembles is to utilise the power of many. Multiple models can be trained over the same dataset or multiple subsets of the dataset and their outputs or scores can be suitably combined at to produce the output or the score for the given data point. The component of an ensemble can be trained in a way such that they could be dependent on each other, like sequential ensembles or they could be independent of each other, like in feature bagging. 
-
-\subsection{Partitioning based techniques}
-
-Streams have outlier samples in rarity and can evolve over time, besides being on potentially infinite length. Partitioning based techniques\cite{tan2011fast} essentially construct an ensemble of trees which perform semi supervised, one-class detection of the rare outliers. These techniques attempt to detect outliers by capturing the density of points in multiple different partitions of the subspaces. The key idea to be able to incorporate for the evolving nature of the streams, is to maintain contiguous, latest and reference windows, to perform outlier detection on the unseen data while updating the reference model atomically with the latest one, after the latest window ends. \\
-
-The feature-evolution setting can be described as follows: Given a data stream $D$ containing updates of the form $(id, f, \delta)$ where $f$ could be a feature which has been seen or unseen until that instant and $id$ is the unique identifier corresponding to the data point. $\delta$ is the update to the feature value of the data point as described above. \\
+The outlier detection problem in streams can be extended to the feature-evolution setting, described as follows: Given a data stream $D$ containing updates of the form $(id, f, \delta)$ where $f$ could be a feature which has been seen or unseen until that instant and $id$ is the unique identifier corresponding to the data point. $\delta$ is the update to the feature value of the data point as described above. \\
 
 Due to the feature evolving nature of the stream, the set of points need to be in memory all the time. Given the fact that new features can be added, the space allocation for the data points can't be bounded before hand and hence is challenging. Also, the feature updates need to be fast and efficient. \\
 
-The algorithm proposed by the authors is a constant space and constant time per update algorithm which combines ideas from subspace partitioning and ensembling while incorporating the feature evolving nature of the input stream. The details of the algorithm along with the advantages and disadvantages of ensembling and partitioning based techniques, will be discussed in the further sections.
+There have been various techniques\cite{tran2016distance}\cite{tan2011fast}\cite{aggarwal2013outlier} which have been proposed to deal with outliers in streaming data. These techniques can be coarsely divided into - $Distance\ based$, $Ensemble\ based$ and $Partitioning\ based$ techniques. The key ideas behind these seminal contributions have been looked at in detail, in the next section.
 
 \section{Related work}
 
@@ -81,6 +71,19 @@ The encoding and the fitness function, described above, are used in conjunction 
 The outlier detection algorithm described in this section essentially uses the idea of projection of points on lower dimensional subspaces while preserving the semantics of being an outlier. The idea of choosing the $k$ - dimensional cube with the most negative sparsity coefficient, is in some way, an attempt to choose a set of attributes out of the large number of dimensions, which best preserve the semantics associated with the outlier points. \\
 
 The latter idea has been explored further as the $ensemble$ based methods gained popularity in the machine learning community. The former idea has also been explored by various authors while proposing various outlier detection techniques based on $subspace$ $partitioning$. Both these techniques have been discussed in significant detail, in the subsequent sections.
+
+\subsection{Ensemble based outlier detection}
+
+Model ensembling is a technique used in machine learning, which involves training multiple models over same or different subsets of data, having same or a subset of the features and then aggregating the results of these models to obtain a stronger classifier. The components of an ensemble can be trained in a way such that they could be dependent on each other, like sequential ensembles\cite{RayanaZA16} or they could be independent of each other, like in bootstrap aggregating. \\
+
+Both sequential and independent ensembles\cite{RayanaZA16}\cite{aggarwal2013outlier} have been employed for the task of outlier detection in data streams. In data stream setting, ensembles are useful to train multiple models for the anomaly detection task.
+
+\subsection{Partitioning based outlier detection}
+
+Streams have outlier samples in rarity and can evolve over time, besides being on potentially infinite length. Partitioning based techniques\cite{tan2011fast} essentially construct an ensemble of trees which perform semi supervised, one-class detection of the rare outliers. These techniques attempt to detect outliers by capturing the density of points in multiple different partitions of the subspaces. The key idea to be able to incorporate for the evolving nature of the streams, is to maintain contiguous, latest and reference windows, to perform outlier detection on the unseen data while updating the reference model atomically with the latest one, after the latest window ends. \\
+
+The algorithm proposed by the authors is a constant space and constant time per update algorithm which combines ideas from subspace partitioning and ensembling while incorporating the feature evolving nature of the input stream. The details of the algorithm along with the advantages and disadvantages of ensembling and partitioning based techniques, will be discussed in the further sections.
+
 
 % This is where a 'short' article might terminate
 
