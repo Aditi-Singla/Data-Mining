@@ -31,52 +31,40 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
         while (i < len(lines)):
             graphID = lines[i][1:].strip()
             if graphID not in activeIDs and graphID not in inactiveIDs:
-                i += 1
-                while i < len(lines) and not(lines[i].startswith('#')):
-                    i += 1
+                trainF.write(lines[i])
+                writestream = trainF
+
             else:
                 if (currID % 10 != 0):
                     trainF.write(lines[i])
                     if graphID in activeIDs:
                         trainActF.write('{}\n'.format(graphID))
-                    else:
+                    elif graphID in inactiveIDs:
                         trainInactF.write('{}\n'.format(graphID))
-                    currID += 1
+                    writestream = trainF
 
-                    trainF.write(lines[i + 1])
-                    V = int(lines[i + 1].strip())
-                    i += 2
-                    for j in range(V):
-                        trainF.write(lines[i + j])
-                    i += V
-
-                    trainF.write(lines[i])
-                    E = int(lines[i].strip())
-                    i += 1
-                    for j in range(E):
-                        trainF.write(lines[i + j])
-                    i += E
                 else:
-                    testF.write('t # {}\n'.format(currID))
+                    testF.write('t # {}\n'.format(graphID))
                     if graphID in activeIDs:
                         testLabelF.write('1\n')
                     else:
                         testLabelF.write('2\n')
-                    currID += 1
+                    writestream = testF
+                currID += 1
 
-                    testF.write(lines[i + 1])
-                    V = int(lines[i + 1].strip())
-                    i += 2
-                    for j in range(V):
-                        testF.write(lines[i + j])
-                    i += V
+            writestream.write(lines[i + 1])
+            V = int(lines[i + 1].strip())
+            i += 2
+            for j in range(V):
+                writestream.write(lines[i + j])
+            i += V
 
-                    testF.write(lines[i])
-                    E = int(lines[i].strip())
-                    i += 1
-                    for j in range(E):
-                        testF.write(lines[i + j])
-                    i += E
+            writestream.write(lines[i])
+            E = int(lines[i].strip())
+            i += 1
+            for j in range(E):
+                writestream.write(lines[i + j])
+            i += E
 
 
 def Run(args):

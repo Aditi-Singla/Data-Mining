@@ -14,6 +14,8 @@ def getParser():
                         help='Active graph IDs')
     parser.add_argument('--inactive', default="",
                         help='Inactive graph IDs')
+    parser.add_argument('--filter', action='store_true',
+                        help='Filter out unlabelled graph')
     return parser
 
 
@@ -27,27 +29,46 @@ def getLabels(activeFile, inactiveFile):
     return activeIDs, inactiveIDs
 
 
-def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs):
+def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs, filter):
     chkID = False
-    if len(activeIDs) > 0 and len(inactiveIDs) > 0:
+    if labelFile != "" and len(activeIDs) > 0 and len(inactiveIDs) > 0:
         chkID = True
-    if labelFile != "":
         labF = open(labelFile, 'w+')
+
+    i, currID, labels, maxlab = 0, 0, {}, 0
     with open(inFile, 'r') as inF, open(outFile, 'w+') as outF:
         lines = inF.readlines()
-        i, currID, labels, maxlab = 0, 0, {}, 0
         while (i < len(lines)):
             graphID = lines[i][1:].strip()
             if chkID and graphID not in activeIDs and graphID not in inactiveIDs:
+                if not(filter):
+                    outF.write('t # {}\n'.format(10 * int(graphID)))
+
+                V = int(lines[i + 1].strip())
+                i += 2
+                if not(filter):
+                    for j in range(V):
+                        label = lines[i + j]
+                        if not(label in labels):
+                            labels[label] = maxlab
+                            maxlab += 1
+                        label = labels[label]
+                        outF.write('v {} {}\n'.format(j, label))
+                i += V
+
+                E = int(lines[i].strip())
                 i += 1
-                while i < len(lines) and not(lines[i].startswith('#')):
-                    i += 1
+                if not(filter):
+                    for j in range(E):
+                        outF.write('e {}'.format(lines[i + j]))
+                i += E
+
             else:
                 outF.write('t # {}\n'.format(currID))
-                if chkID and labelFile != "":
+                if chkID:
                     if graphID in activeIDs:
                         labF.write('1\n')
-                    else:
+                    elif graphID in inactiveIDs:
                         labF.write('2\n')
                 currID += 1
 
@@ -67,14 +88,15 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs):
                 for j in range(E):
                     outF.write('e {}'.format(lines[i + j]))
                 i += E
-    if labelFile != "":
+
+    if chkID:
         labF.close()
 
 
 def Run(args):
     activeIDs, inactiveIDs = getLabels(args['active'], args['inactive'])
-    convert(args['inFile'], args['outFile'],
-            args['labels'], activeIDs, inactiveIDs)
+    convert(args['inFile'], args['outFile'], args['labels'],
+            activeIDs, inactiveIDs, args['filter'])
 
 
 if __name__ == '__main__':
