@@ -30,11 +30,11 @@ The existing algorithms and techniques for data streams fail to work for feature
 
 The problem we are looking at essentially, is as follows: Given a data stream $D = \{x1, x2, ....\}$, we want to identify the data points, which are outliers. In the preliminary version of the problem, we assume the number of dimensions of every data item as a constant, say $k$.\\
 
+There have been various techniques\cite{tran2016distance}\cite{tan2011fast}\cite{aggarwal2013outlier} which have been proposed to deal with outliers in streaming data. These techniques can be coarsely divided into - $Distance\ based$, $Ensemble\ based$ and $Streaming\ based$ techniques. \\
+
 The outlier detection problem in streams can be extended to the feature-evolution setting, described as follows: Given a data stream $D$ containing updates of the form $(id, f, \delta)$ where $f$ could be a feature which has been seen or unseen until that instant and $id$ is the unique identifier corresponding to the data point. $\delta$ is the update to the feature value of the data point as described above. \\
 
-Due to the feature evolving nature of the stream, the set of points need to be in memory all the time. Given the fact that new features can be added, the space allocation for the data points can't be bounded before hand and hence is challenging. Also, the feature updates need to be fast and efficient. \\
-
-There have been various techniques\cite{tran2016distance}\cite{tan2011fast}\cite{aggarwal2013outlier} which have been proposed to deal with outliers in streaming data. These techniques can be coarsely divided into - $Distance\ based$, $Ensemble\ based$ and $Partitioning\ based$ techniques. The key ideas behind these seminal contributions have been looked at in detail, in the next section.
+The key ideas behind these seminal contributions have been looked at in detail, in the next section.
 
 \section{Related work}
 
@@ -110,7 +110,7 @@ An idea which the authors propose is to convert the model scores into probabilit
 
 Lastly, the choice of combination function is also important based on the semantics associated with the component models of the ensemble. Popularly used combination functions include max, min, average, weighted average or the last model's output. Average functions are known to dilute the individual model scores and hence the authors caution against their use unless the component models are also selected keeping this consideration in mind. 
 
-\subsection{Partitioning based outlier detection}
+\subsection{Streaming based outlier detection}
 
 We have already discussed about the infinite length of the data streams which makes it infeasible to load the data in memory and perform anomaly detection. Besides that, the presence of outliers in streams is rare i.e most of the data samples in a stream are not outliers. An important observation here is that due this rarity of outliers, the scenario of training classifiers for anomaly detection can be considered as an semi supervised learning setting, where the training data or the labels corresponding to the outliers are not always available at the time of training. \\
 
@@ -134,12 +134,41 @@ The final score is computed as $n.r\ *\ 2^{n.k}$ where $n.r$ is the reference wi
 
 \subsection{Feature evolving data streams}
 
-The algorithm proposed by the authors is a constant space and constant time per update algorithm which combines ideas from subspace partitioning and ensembling while incorporating the feature evolving nature of the input stream. 
+All the algorithms discussed till now, work with data streams where the data points have a fixed dimensionality. The features may evolve over time, as has been discussed in the previous section, but the assumption prevents new features from emerging over time. \\
 
+Manzoor et al in their recent work\cite{Manzoor:2018:XOD:3219819.3220107} discuss many real world applications where emergence of new features in data streams is very natural. These applications have been discussed in earlier sections, to motivate outlier detection in data streams which are feature evolving. \\ 
+
+Due to the feature evolving nature of the stream, the set of points need to be in memory all the time. Given the fact that new features can be added, the space allocation for the data points can't be bounded before hand and hence is challenging. Also, the feature updates need to be fast and efficient. \\
+
+The algorithm proposed by the authors is a constant space and constant time per update algorithm which combines ideas from subspace partitioning and ensembling, while incorporating the feature evolving nature of the input stream. \\
+
+\noindent \textbf{Stream Hash} \\
+
+Dimensionality reduction of the feature space has been at the core of many data mining algorithms to get around the dimensionality curse. Among the popular techniques used for the same, distance preserving techniques like $Random\ projections$ are a fast and an efficient way, to project the data onto a smaller feature subspace. \\
+
+In $Random\ Projections$, the data points are projected onto a dimension of size $K$, by considering a set of $K$ Gaussian random vectors. Thus, for a $d$ - dimensional data point $x$, a set of Gaussian random vectors $\{r_1,r_2...r_K\}$ is chosen and the embedding in $K$ - dimensions is computed as $y\ =\ (x^Tr_1,x^Tr_1...,x^Tr_K)$. For the task of outlier detection, we attempt to obtain projections across multiple small feature subspaces, by selecting the random vectors where only $one\ third$ of the features have a non zero value. This helps us to look for outliers which are embedded in low dimensional subspaces, which otherwise would have been difficult to obtain, due to irrelevant features having a non zero value. \\
+
+A major issue in feature evolving streams is the fact that new features could emerge with time and so, the actual dimensionality of the data stream is not known. To get around this problem, the authors propose replacing Gaussian random vectors with hash functions. Consider a family $h_i$ of hash functions. We consider $K$ hash functions $h_1(.)$, $h_2(.)$ .... $h_K(.)$, from this family. Every hash function maps a $feature$ to a real value. The hash functions are constructed to maintain the probability distribution of a sparse random vectors, as discussed above \\
+
+Now, the projection $y$ of the point $x$, becomes, $$y[i]\ =\ \sum_{j}\ h_i(f_j)x[j]$$. The hash function helps in associating non zero values with unseen features. Considering updates of the form $(id, f, \delta)$, as described in the problem formulation, the computation of the projection $y$ becomes $$y_{id}[i]\ +=\ h_i(f)\delta$$. \\
+
+\noindent \textbf{Half space chains} \\
+
+Once the projections are computed in the lower dimensional subspace, the authors use streaming half space chains, as discussed in the previous section, to learn an ensemble of semi supervised classification models, for outlier detection. The construction of half space chains and the scoring function remain the same as discussed before. \\
+
+\noindent \textbf{Non-stationarity of evolving point} \\
+
+In order to take care of the time evolving data, the idea of keeping a $current$ and a $reference$ window is used. As discussed before, the $reference$ window parameters are used for outlier detection while the $current$ window parameters are computed in a streaming fashion. \\
+
+\noindent \textbf{Caching of data points} \\
+
+Due to the emergence of new features, a data point might see a feature update some time later in future, after it has been processed. Thus, earlier we could get rid of the data points which have been processed but now, we can not discard those points. \\
+
+For this, the authors propose a fixed size $LRU$ cache to keep track of the processed points. When an incremental update is processed, the corresponding point is removed from the half space chain and then the updated point is added back by suitable modification of the mass profiles in the half space trees. Also, the position of the point in the $LRU$ cache is updated, to the head of the list.\\
+
+The authors use this algorithm to solve the outlier detection problem in static and streaming settings with a constant feature space dimensionality and evaluate its performance. The algorithm is able to match the performance of the state of the art, in both cases.
 
 % This is where a 'short' article might terminate
-
-
 
 \appendix
 %Appendix A
