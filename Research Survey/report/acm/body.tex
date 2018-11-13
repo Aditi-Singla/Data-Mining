@@ -164,9 +164,19 @@ In order to take care of the time evolving data, the idea of keeping a $current$
 
 Due to the emergence of new features, a data point might see a feature update some time later in future, after it has been processed. Thus, earlier we could get rid of the data points which have been processed but now, we can not discard those points. \\
 
-For this, the authors propose a fixed size $LRU$ cache to keep track of the processed points. When an incremental update is processed, the corresponding point is removed from the half space chain and then the updated point is added back by suitable modification of the mass profiles in the half space trees. Also, the position of the point in the $LRU$ cache is updated, to the head of the list.\\
+For this, the authors propose a fixed size $LRU$ cache to keep track of the processed points. When an incremental update is processed, the corresponding point is removed from the half space chain and then the updated point is added back by suitable modification of the mass profiles in the half space trees. Also, the position of the point in the $LRU$ cache is updated, to the head of the list. \\
 
 The authors use this algorithm to solve the outlier detection problem in static and streaming settings with a constant feature space dimensionality and evaluate its performance. The algorithm is able to match the performance of the state of the art, in both cases.
+
+\section{Conclusion}
+
+We have looked at the problem of finding outliers in a stream of data and given a mathematical formulation of the same. In this process, we have also outlined the associated challenges with mining of data streams including but not limited to memory constraints, efficiency and time evolving data. \\
+
+We have discussed various key techniques which have been proposed, over the years, for detecting outliers in data streams. These techniques borrow ideas from statistics as well as machine learning and can be broadly classified into - $distance\ based$, $ensemble\ based$ and $streaming\ based$ methods. \\
+
+An important limitation of the above methods is that they do not work in the setting where new features could emerge in the data samples over time. Towards the end, we formulate the problem of outlier detection in data streams which are feature-evolving and discuss about $x'Stream$, a solution which overcomes the limitations of the existing methods. \\
+
+It proposes a constant time per update algorithm for outlier detection. The algorithm matches the state of the art in the static and streaming data setting, where the feature space has a fixed dimensionality.
 
 % This is where a 'short' article might terminate
 
