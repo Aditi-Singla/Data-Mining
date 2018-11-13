@@ -4,9 +4,9 @@ import argparse
 import subprocess
 import numpy as np
 import networkx as nx
+from sklearn.svm import LinearSVC
 from collections import defaultdict
 from sklearn.preprocessing import normalize
-from sklearn import feature_selection as select
 from networkx.algorithms import isomorphism as iso
 
 ACTIVE_LABEL = 1
@@ -26,12 +26,7 @@ def getParser():
 
 
 def runFSG(convFile, fsgOutputFile, support):
-    numTrainGraphs = int(subprocess.check_output(
-        'grep \# {} | wc -l'.format(convFile), shell=True).strip())
     os.system('./libraries/gSpan -f {} -s {} -i -o'.format(convFile, support))
-    numFeatures = int(subprocess.check_output(
-        'grep \# {} | wc -l'.format(fsgOutputFile), shell=True).strip())
-    return numTrainGraphs, numFeatures
 
 
 def convGraphStr(graphStr):
@@ -58,7 +53,8 @@ def getTrainVectors(fsgOutputFile, labelFile, numGraphs, numFeatures):
         for line in fsgF:
             if line.startswith('x'):
                 for graph in map(int, line[2:].strip().split()):
-                    X[graph][i] = 1
+                    if graph >= 0 and graph < numGraphs:
+                        X[graph][i] = 1
                 i += 1
                 FSG.append(convGraphStr(currGraphStr))
             elif line.startswith('t'):
@@ -72,29 +68,35 @@ def getTrainVectors(fsgOutputFile, labelFile, numGraphs, numFeatures):
     return X, Y, FSG
 
 
-def getTestVectors(testConvFile, labelFile, FSG):
-    numGraphs = int(subprocess.check_output(
-        'grep \# {} | wc -l'.format(testConvFile), shell=True).strip())
-    X = np.zeros((numGraphs, len(FSG)))
+def getTestGraphs(testConvFile, labelFile):
+    testGraphs = []
     with open(testConvFile, 'r') as testConvF:
         i = 0
         currGraphStr = ""
         for line in testConvF:
             if line.startswith('t'):
                 if currGraphStr != "":
-                    testGraph = convGraphStr(currGraphStr)
-                    for j in range(len(FSG)):
-                        GM = iso.GraphMatcher(
-                            testGraph, FSG[j], node_match=lambda x, y: x['label'] == y['label'], edge_match=lambda x, y: x['label'] == y['label'])
-                        if GM.subgraph_is_isomorphic():
-                            X[i][j] = 1
+                    testGraphs.append(convGraphStr(currGraphStr))
                     i += 1
                 currGraphStr = ""
             else:
                 currGraphStr += line
+        testGraphs.append(convGraphStr(currGraphStr))
+
     with open(labelFile, 'r') as lf:
         Y = list(map(lambda x: int(x.strip()), lf.readlines()))
-    return X, Y
+    return testGraphs, Y
+
+
+def getTestVectors(testGraphs, FSG):
+    X = np.zeros((len(testGraphs), len(FSG)))
+    for i in range(len(testGraphs)):
+        for j in range(len(FSG)):
+            GM = iso.GraphMatcher(
+                testGraphs[i], FSG[j], node_match=lambda x, y: x['label'] == y['label'], edge_match=lambda x, y: x['label'] == y['label'])
+            if GM.subgraph_is_isomorphic():
+                X[i][j] = 1
+    return X
 
 
 def getFrequencyMaps(X_train, Y_train):
@@ -122,7 +124,7 @@ def getTopKDiscriminativeFeatures(numFeatures, featFreqActive, featFreqInactive,
     diffList = []
     for i in range(numFeatures):
         diffList.append((i, abs(featFreqActive[i] - featFreqInactive[i])))
-    cols, freq = zip(*(sorted(diffList, key=lambda x: -x[1])[:k]))
+    cols, freq = zip(*(sorted(diffList, key=lambda x: x[1])[-k:]))
     # return select.SelectKBest(select.mutual_info_classif, k=k).fit(X_train, Y_train).get_support()
     return cols
 
@@ -132,16 +134,16 @@ def idfTransform(X_train, featFreqActive, featFreqInactive):
     for i in range(len(X_train)):
         for j in range(numFeatures):
             if X_train[i][j] == 1 and (featFreqActive[j] + featFreqInactive[j]):
-                # X_train = 0
+                # X_train[i][j] = 0
                 # if featFreqActive[j]:
-                #     X_train += 1.0 / featFreqActive[j]
+                #     X_train[i][j] += 1.0 / featFreqActive[j]
                 # if featFreqInactive[j]:
-                #     X_train -= 1.0 / featFreqInactive[j]
+                #     X_train[i][j] -= 1.0 / featFreqInactive[j]
                 X_train[i][j] = 1.0 / (featFreqActive[j] + featFreqInactive[j])
             else:
                 X_train[i][j] = 0
     return normalize(X_train, axis=1, norm='l2')
-    
+
 
 def libSVMformat(X, Y, out_file):
     with open(out_file, 'w') as out:
@@ -155,24 +157,46 @@ def libSVMformat(X, Y, out_file):
                 out.write('\n')
 
 
-def Run(args):
+def RunClassify(k, support, numTrainGraphs, args):
+    print 'Support : {} Features : {}'.format(support, k)
+
     fsgOutputFile = '{}.fp'.format(args['trainData'])
-    support = args['support']
-    numTrainGraphs, numFeatures = runFSG(
-        args['trainData'], fsgOutputFile, support)
+    runFSG(args['trainData'], fsgOutputFile, support)
+    numFeatures = int(subprocess.check_output(
+        'grep \# {} | wc -l'.format(fsgOutputFile), shell=True).strip())
+
     X_train, Y_train, FSG = getTrainVectors(
         fsgOutputFile, args['trainLabels'], numTrainGraphs, numFeatures)
 
     featFreqActive, featFreqInactive = getFrequencyMaps(X_train, Y_train)
-    cols = getTopKDiscriminativeFeatures(numFeatures, featFreqActive, featFreqInactive, 100)
+    cols = getTopKDiscriminativeFeatures(
+        numFeatures, featFreqActive, featFreqInactive, k)
     X_train, FSG = X_train[:, cols], np.array(FSG).take(cols)
     # X_train = idfTransform(X_train, featFreqActive, featFreqInactive)
-    
-    X_test, Y_test = getTestVectors(args['testData'], args['testLabels'], FSG)
+
+    testGraphs, Y_test = getTestGraphs(args['testData'], args['testLabels'])
+    X_test = getTestVectors(testGraphs, FSG)
     # X_test = idfTransform(X_test, featFreqActive, featFreqInactive)
 
-    libSVMformat(X_train, Y_train, 'train.txt')
-    libSVMformat(X_test, Y_test, 'test.txt')
+    acc = LinearSVC(max_iter=10000).fit(X_train, Y_train).score(X_test, Y_test)
+
+    return acc, X_train, Y_train, X_test, Y_test
+
+
+def Run(args):
+    numTrainGraphs = int(subprocess.check_output(
+        'cat {} | wc -l'.format(args['trainLabels']), shell=True).strip())
+
+    mAcc, mX_train, mY_train, mX_test, mY_test = 0, None, None, None, None
+    for k in range(100, 110, 10):
+        for s in range(2, 3, 1):
+            acc, X_train, Y_train, X_test, Y_test = RunClassify(
+                k, s / 10.0, numTrainGraphs, args)
+            if acc > mAcc:
+                mAcc, mX_train, mY_train, mX_test, mY_test = acc, X_train, Y_train, X_test, Y_test
+
+    libSVMformat(mX_train, mY_train, 'train.txt')
+    libSVMformat(mX_test, mY_test, 'test.txt')
 
 
 if __name__ == '__main__':
