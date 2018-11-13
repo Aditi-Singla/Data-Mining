@@ -4,9 +4,10 @@ import argparse
 import subprocess
 import numpy as np
 import networkx as nx
-from sklearn.svm import LinearSVC
 from collections import defaultdict
+from sklearn.svm import LinearSVC
 from sklearn.preprocessing import normalize
+from sklearn.preprocessing import StandardScaler
 from networkx.algorithms import isomorphism as iso
 
 ACTIVE_LABEL = 1
@@ -133,16 +134,12 @@ def idfTransform(X_train, featFreqActive, featFreqInactive):
     numFeatures = len(X_train[0])
     for i in range(len(X_train)):
         for j in range(numFeatures):
-            if X_train[i][j] == 1 and (featFreqActive[j] + featFreqInactive[j]):
-                # X_train[i][j] = 0
-                # if featFreqActive[j]:
-                #     X_train[i][j] += 1.0 / featFreqActive[j]
-                # if featFreqInactive[j]:
-                #     X_train[i][j] -= 1.0 / featFreqInactive[j]
-                X_train[i][j] = 1.0 / (featFreqActive[j] + featFreqInactive[j])
-            else:
-                X_train[i][j] = 0
-    return normalize(X_train, axis=1, norm='l2')
+            if X_train[i][j] == 1:
+                X_train[i][j] = featFreqActive[j] - featFreqInactive[j]
+                # X_train[i][j] = 1.0 / (featFreqActive[j] + featFreqInactive[j])
+    # X_train = normalize(X_train, axis=1, norm='l2')
+    scaler = StandardScaler().fit(X_train)
+    return X_train, scaler
 
 
 def libSVMformat(X, Y, out_file):
@@ -172,11 +169,13 @@ def RunClassify(k, support, numTrainGraphs, args):
     cols = getTopKDiscriminativeFeatures(
         numFeatures, featFreqActive, featFreqInactive, k)
     X_train, FSG = X_train[:, cols], np.array(FSG).take(cols)
-    # X_train = idfTransform(X_train, featFreqActive, featFreqInactive)
+    X_train, scaler = idfTransform(X_train, featFreqActive, featFreqInactive)
+    X_train = scaler.transform(X_train)
 
     testGraphs, Y_test = getTestGraphs(args['testData'], args['testLabels'])
     X_test = getTestVectors(testGraphs, FSG)
-    # X_test = idfTransform(X_test, featFreqActive, featFreqInactive)
+    X_test, sc = idfTransform(X_test, featFreqActive, featFreqInactive)
+    X_test = scaler.transform(X_test)
 
     acc = LinearSVC(max_iter=10000).fit(X_train, Y_train).score(X_test, Y_test)
 
