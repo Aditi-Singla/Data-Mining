@@ -27,7 +27,8 @@ def getParser():
 
 
 def runFSG(convFile, fsgOutputFile, support):
-    os.system('./libraries/gSpan -f {} -s {} -i -o'.format(convFile, support))
+    os.system('./libraries/gBolt -input_file {} -output_file {} -support {} -pattern'.format(
+        convFile, fsgOutputFile[:-3], support))
 
 
 def convGraphStr(graphStr):
@@ -53,7 +54,7 @@ def getTrainVectors(fsgOutputFile, labelFile, numGraphs, numFeatures):
         currGraphStr = ""
         for line in fsgF:
             if line.startswith('x'):
-                for graph in map(int, line[2:].strip().split()):
+                for graph in map(int, line[3:].strip().split()):
                     if graph >= 0 and graph < numGraphs:
                         X[graph][i] = 1
                 i += 1
@@ -126,7 +127,6 @@ def getTopKDiscriminativeFeatures(numFeatures, featFreqActive, featFreqInactive,
     for i in range(numFeatures):
         diffList.append((i, abs(featFreqActive[i] - featFreqInactive[i])))
     cols, freq = zip(*(sorted(diffList, key=lambda x: x[1])[-k:]))
-    # return select.SelectKBest(select.mutual_info_classif, k=k).fit(X_train, Y_train).get_support()
     return cols
 
 
@@ -136,8 +136,7 @@ def idfTransform(X_train, featFreqActive, featFreqInactive):
         for j in range(numFeatures):
             if X_train[i][j] == 1:
                 X_train[i][j] = featFreqActive[j] - featFreqInactive[j]
-                # X_train[i][j] = 1.0 / (featFreqActive[j] + featFreqInactive[j])
-    # X_train = normalize(X_train, axis=1, norm='l2')
+    X_train = normalize(X_train, axis=1, norm='l2')
     scaler = StandardScaler().fit(X_train)
     return X_train, scaler
 
@@ -155,9 +154,9 @@ def libSVMformat(X, Y, out_file):
 
 
 def RunClassify(k, support, numTrainGraphs, args):
-    print 'Support : {} Features : {}'.format(support, k)
+    print('Support : {} Features : {}'.format(support, k))
 
-    fsgOutputFile = '{}.fp'.format(args['trainData'])
+    fsgOutputFile = '{}.fp.t0'.format(args['trainData'])
     runFSG(args['trainData'], fsgOutputFile, support)
     numFeatures = int(subprocess.check_output(
         'grep \# {} | wc -l'.format(fsgOutputFile), shell=True).strip())
@@ -169,13 +168,9 @@ def RunClassify(k, support, numTrainGraphs, args):
     cols = getTopKDiscriminativeFeatures(
         numFeatures, featFreqActive, featFreqInactive, k)
     X_train, FSG = X_train[:, cols], np.array(FSG).take(cols)
-    X_train, scaler = idfTransform(X_train, featFreqActive, featFreqInactive)
-    X_train = scaler.transform(X_train)
 
     testGraphs, Y_test = getTestGraphs(args['testData'], args['testLabels'])
     X_test = getTestVectors(testGraphs, FSG)
-    X_test, sc = idfTransform(X_test, featFreqActive, featFreqInactive)
-    X_test = scaler.transform(X_test)
 
     acc = LinearSVC(max_iter=10000).fit(X_train, Y_train).score(X_test, Y_test)
 
@@ -187,10 +182,11 @@ def Run(args):
         'cat {} | wc -l'.format(args['trainLabels']), shell=True).strip())
 
     mAcc, mX_train, mY_train, mX_test, mY_test = 0, None, None, None, None
-    for k in range(100, 110, 10):
-        for s in range(2, 3, 1):
+    for k in range(50, 200, 50):
+        supp = int(args['support'] * 100)
+        for s in range(supp, supp + 1):
             acc, X_train, Y_train, X_test, Y_test = RunClassify(
-                k, s / 10.0, numTrainGraphs, args)
+                k, s / 100.0, numTrainGraphs, args)
             if acc > mAcc:
                 mAcc, mX_train, mY_train, mX_test, mY_test = acc, X_train, Y_train, X_test, Y_test
 
