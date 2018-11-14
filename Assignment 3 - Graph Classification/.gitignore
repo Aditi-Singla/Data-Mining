@@ -2,3 +2,5 @@
 *.fp
 callgrind*
 temp/*
+*.t0
+quick.py
