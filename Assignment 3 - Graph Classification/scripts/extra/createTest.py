@@ -35,8 +35,8 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
                 writestream = trainF
 
             else:
+                trainF.write(lines[i])
                 if (currID % 5 != 0):
-                    trainF.write(lines[i])
                     if graphID in activeIDs:
                         trainActF.write('{}\n'.format(graphID))
                     elif graphID in inactiveIDs:
@@ -44,7 +44,7 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
                     writestream = trainF
 
                 else:
-                    testF.write('t # {}\n'.format(graphID))
+                    testF.write(lines[i])
                     if graphID in activeIDs:
                         testLabelF.write('1\n')
                     else:

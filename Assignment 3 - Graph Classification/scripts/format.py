@@ -75,6 +75,7 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs, filter):
                 V = int(lines[i + 1].strip())
                 i += 2
                 for j in range(V):
+                    
                     label = lines[i + j]
                     if not(label in labels):
                         labels[label] = maxlab

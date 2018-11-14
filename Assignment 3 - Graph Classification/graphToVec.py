@@ -102,13 +102,6 @@ def getTestVectors(testGraphs, FSG):
 
 
 def getFrequencyMaps(X_train, Y_train):
-    numActive, numInactive = 0.0, 0.0
-    for i in Y_train:
-        if i == ACTIVE_LABEL:
-            numActive += 1
-        else:
-            numInactive += 1
-
     numActive = sum([1 for y in Y_train if y == 1])
     numInactive = len(X_train) - numActive
     featFreqActive, featFreqInactive = defaultdict(int), defaultdict(int)
@@ -155,7 +148,6 @@ def libSVMformat(X, Y, out_file):
 
 def RunClassify(k, support, numTrainGraphs, args):
     print('Support : {} Features : {}'.format(support, k))
-
     fsgOutputFile = '{}.fp.t0'.format(args['trainData'])
     runFSG(args['trainData'], fsgOutputFile, support)
     numFeatures = int(subprocess.check_output(
@@ -168,6 +160,9 @@ def RunClassify(k, support, numTrainGraphs, args):
     cols = getTopKDiscriminativeFeatures(
         numFeatures, featFreqActive, featFreqInactive, k)
     X_train, FSG = X_train[:, cols], np.array(FSG).take(cols)
+
+    testGraphs, Y_test = getTestGraphs(args['testData'], args['testLabels'])
+    X_test = getTestVectors(testGraphs, FSG)
 
     testGraphs, Y_test = getTestGraphs(args['testData'], args['testLabels'])
     X_test = getTestVectors(testGraphs, FSG)
