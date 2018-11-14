@@ -5,6 +5,7 @@ import subprocess
 import numpy as np
 import networkx as nx
 from collections import defaultdict
+from sklearn.utils import resample
 from sklearn.svm import LinearSVC
 from sklearn.preprocessing import normalize
 from sklearn.preprocessing import StandardScaler
@@ -27,6 +28,7 @@ def getParser():
 
 
 def runFSG(convFile, fsgOutputFile, support):
+
     os.system('./libraries/gBolt -input_file {} -output_file {} -support {} -pattern'.format(
         convFile, fsgOutputFile[:-3], support))
 
@@ -137,7 +139,10 @@ def idfTransform(X_train, featFreqActive, featFreqInactive):
 def libSVMformat(X, Y, out_file):
     with open(out_file, 'w') as out:
         for i in range(len(X)):
-            out.write(str(Y[i]))
+            if Y[i] == 1:
+                out.write('1')
+            else:
+                out.write('-1')
             for j in range(1, len(X[i]) + 1):
                 if X[i][j - 1] != 0:
                     out.write(str(' '))
@@ -178,12 +183,11 @@ def Run(args):
 
     mAcc, mX_train, mY_train, mX_test, mY_test = 0, None, None, None, None
     for k in range(50, 200, 50):
-        supp = int(args['support'] * 100)
-        for s in range(supp, supp + 1):
-            acc, X_train, Y_train, X_test, Y_test = RunClassify(
-                k, s / 100.0, numTrainGraphs, args)
-            if acc > mAcc:
-                mAcc, mX_train, mY_train, mX_test, mY_test = acc, X_train, Y_train, X_test, Y_test
+    # k = 100
+        acc, X_train, Y_train, X_test, Y_test = RunClassify(
+            k, args['support'], numTrainGraphs, args)
+        if acc > mAcc:
+            mAcc, mX_train, mY_train, mX_test, mY_test = acc, X_train, Y_train, X_test, Y_test
 
     libSVMformat(mX_train, mY_train, 'train.txt')
     libSVMformat(mX_test, mY_test, 'test.txt')

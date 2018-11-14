@@ -7,4 +7,4 @@ if [ "$#" == 1 ]; then
 else
     ./scripts/run.sh data/data_train.txt data/data_train_active.txt data/data_train_inactive.txt data/data_test.txt
 fi
-rm data/*.txt data/*.fp
+# rm data/*.txt data/*.fp

@@ -38,7 +38,9 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs, filter):
     i, currID, labels, maxlab = 0, 0, {}, 0
     with open(inFile, 'r') as inF, open(outFile, 'w+') as outF:
         lines = inF.readlines()
+        inac = 0
         while (i < len(lines)):
+            dowrite = True
             graphID = lines[i][1:].strip()
             if chkID and graphID not in activeIDs and graphID not in inactiveIDs:
                 if not(filter):
@@ -64,30 +66,37 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs, filter):
                 i += E
 
             else:
-                outF.write('t # {}\n'.format(currID))
                 if chkID:
                     if graphID in activeIDs:
                         labF.write('1\n')
                     elif graphID in inactiveIDs:
-                        labF.write('2\n')
-                currID += 1
+                        if len(inactiveIDs) and inac >= len(activeIDs):
+                            dowrite = False
+                        else:
+                            labF.write('2\n')
+                            inac += 1
+
+                if dowrite:
+                    outF.write('t # {}\n'.format(currID))
+                    currID += 1
 
                 V = int(lines[i + 1].strip())
                 i += 2
-                for j in range(V):
-                    
-                    label = lines[i + j]
-                    if not(label in labels):
-                        labels[label] = maxlab
-                        maxlab += 1
-                    label = labels[label]
-                    outF.write('v {} {}\n'.format(j, label))
+                if (dowrite):
+                    for j in range(V):
+                        label = lines[i + j]
+                        if not(label in labels):
+                            labels[label] = maxlab
+                            maxlab += 1
+                        label = labels[label]
+                        outF.write('v {} {}\n'.format(j, label))
                 i += V
 
                 E = int(lines[i].strip())
                 i += 1
-                for j in range(E):
-                    outF.write('e {}'.format(lines[i + j]))
+                if (dowrite):
+                    for j in range(E):
+                        outF.write('e {}'.format(lines[i + j]))
                 i += E
 
     if chkID:
