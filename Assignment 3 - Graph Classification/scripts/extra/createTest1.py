@@ -37,7 +37,7 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
                     trainInactF.write('{}\n'.format(graphID))
                 writestream = trainF
             else:
-                testF.write('t # {}\n'.format(graphID))
+                testF.write(lines[i])
                 if graphID in activeIDs:
                     testLabelF.write('1\n')
                 else:

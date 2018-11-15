@@ -32,16 +32,14 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
             if graphID not in activeIDs and graphID not in inactiveIDs:
                 trainF.write(lines[i])
                 writestream = trainF
-
             else:
-                trainF.write(lines[i])
                 if (currID % 5 != 0):
+                    trainF.write(lines[i])
                     if graphID in activeIDs:
                         trainActF.write('{}\n'.format(graphID))
                     elif graphID in inactiveIDs:
                         trainInactF.write('{}\n'.format(graphID))
                     writestream = trainF
-
                 else:
                     testF.write(lines[i])
                     if graphID in activeIDs:
@@ -50,7 +48,7 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
                         testLabelF.write('2\n')
                     writestream = testF
                 currID += 1
-
+        
             writestream.write(lines[i + 1])
             V = int(lines[i + 1].strip())
             i += 2

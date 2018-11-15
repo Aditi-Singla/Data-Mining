@@ -70,11 +70,11 @@ def convert(inFile, outFile, labelFile, activeIDs, inactiveIDs, filter):
                     if graphID in activeIDs:
                         labF.write('1\n')
                     elif graphID in inactiveIDs:
-                        if len(inactiveIDs) and inac >= len(activeIDs):
-                            dowrite = False
-                        else:
-                            labF.write('2\n')
-                            inac += 1
+                        # if len(inactiveIDs) and inac >= len(activeIDs):
+                        #     dowrite = False
+                        # else:
+                        labF.write('2\n')
+                        inac += 1
 
                 if dowrite:
                     outF.write('t # {}\n'.format(currID))

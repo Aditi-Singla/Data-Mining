@@ -4,3 +4,4 @@ callgrind*
 temp/*
 *.t?
 quick.py
+*_fsg
