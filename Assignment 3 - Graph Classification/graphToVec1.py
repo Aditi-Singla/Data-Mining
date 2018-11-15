@@ -28,7 +28,6 @@ def getParser():
 
 
 # def runFSG(convFile, fsgOutputFile, support):
-
 #     os.system('./libraries/gBolt -input_file {} -output_file {} -support {} -pattern'.format(
 #         convFile, fsgOutputFile[:-3], support))
 
@@ -109,20 +108,29 @@ def getFrequencyMaps(X_train, Y_train):
     numInactive = len(X_train) - numActive
     featFreqActive, featFreqInactive = defaultdict(int), defaultdict(int)
     for i in range(len(X_train)):
-        for j in range(len(X_train[i])):
+        numFeatures = len(X_train[i])
+        # score = sum([1 for y in X_train[i] if y == 0]) / (1.0 * numFeatures)
+        score = 1
+        for j in range(numFeatures):
             if X_train[i][j] == 1:
                 if Y_train[i] == ACTIVE_LABEL:
-                    featFreqActive[j] += (1.0 / numActive)
+                    featFreqActive[j] += (1.0 / numActive) * score
                 else:
-                    featFreqInactive[j] += (1.0 / numInactive)
+                    featFreqInactive[j] += (1.0 / numInactive) * score
     return featFreqActive, featFreqInactive
 
 
 def getTopKDiscriminativeFeatures(numFeatures, featFreqActive, featFreqInactive, k=100):
+    # print("ACTIVE, INACTIVE")
+    # for i in range(numFeatures):
+    # 	print(featFreqActive[i]," , ",featFreqInactive[i]," : ",abs(featFreqActive[i] - featFreqInactive[i]))
     diffList = []
     for i in range(numFeatures):
         diffList.append((i, abs(featFreqActive[i] - featFreqInactive[i])))
     cols, freq = zip(*(sorted(diffList, key=lambda x: x[1])[-k:]))
+    # print("FREQ")
+    # for i in range(len(cols)):
+    # 	print(cols[i],":",freq[i])
     return cols
 
 
