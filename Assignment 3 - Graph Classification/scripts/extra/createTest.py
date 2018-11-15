@@ -27,7 +27,6 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
     with open(inFile, 'r') as inF, open(trainFile, 'w+') as trainF, open(trainActFile, 'w+') as trainActF, open(trainInactFile, 'w+') as trainInactF, open(testFile, 'w+') as testF, open(testLabelFile, 'w+') as testLabelF:
         lines = inF.readlines()
         i, currID, labels, maxlab = 0, 0, {}, 0
-        numInactive = 0
         while (i < len(lines)):
             graphID = lines[i][1:].strip()
             if graphID not in activeIDs and graphID not in inactiveIDs:
