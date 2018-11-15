@@ -111,9 +111,9 @@ def getFrequencyMaps(X_train, Y_train):
         for j in range(len(X_train[i])):
             if X_train[i][j] == 1:
                 if Y_train[i] == ACTIVE_LABEL:
-                    featFreqActive[i] += (1.0 / numActive)
+                    featFreqActive[j] += (1.0 / numActive)
                 else:
-                    featFreqInactive[i] += (1.0 / numInactive)
+                    featFreqInactive[j] += (1.0 / numInactive)
     return featFreqActive, featFreqInactive
 
 
@@ -169,9 +169,6 @@ def RunClassify(k, support, numTrainGraphs, args):
     testGraphs, Y_test = getTestGraphs(args['testData'], args['testLabels'])
     X_test = getTestVectors(testGraphs, FSG)
 
-    testGraphs, Y_test = getTestGraphs(args['testData'], args['testLabels'])
-    X_test = getTestVectors(testGraphs, FSG)
-
     acc = LinearSVC(max_iter=10000).fit(X_train, Y_train).score(X_test, Y_test)
 
     return acc, X_train, Y_train, X_test, Y_test
@@ -183,7 +180,6 @@ def Run(args):
 
     mAcc, mX_train, mY_train, mX_test, mY_test = 0, None, None, None, None
     for k in range(50, 200, 50):
-    # k = 100
         acc, X_train, Y_train, X_test, Y_test = RunClassify(
             k, args['support'], numTrainGraphs, args)
         if acc > mAcc:

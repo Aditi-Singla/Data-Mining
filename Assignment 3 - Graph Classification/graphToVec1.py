@@ -112,9 +112,9 @@ def getFrequencyMaps(X_train, Y_train):
         for j in range(len(X_train[i])):
             if X_train[i][j] == 1:
                 if Y_train[i] == ACTIVE_LABEL:
-                    featFreqActive[i] += (1.0 / numActive)
+                    featFreqActive[j] += (1.0 / numActive)
                 else:
-                    featFreqInactive[i] += (1.0 / numInactive)
+                    featFreqInactive[j] += (1.0 / numInactive)
     return featFreqActive, featFreqInactive
 
 
