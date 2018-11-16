@@ -184,6 +184,14 @@ Given a data stream $D$ containing updates of the form $(id, f, \delta)$ where $
 
 We need to train a model to detection outliers from this stream $D$. Besides this, the model should also be able to output a relevance score for the features. Finally, the model should expose and API where we should be able to ask the model to perform outlier detection using the top $k$ relevant features. Here $k$ is the input and a high relevance corresponds to a hight feature relevance score.
 
+\section{Proposed ideas}
+
+The key component of the solution will be a mechanism to compute the outlier projections with and without considering a feature $f$. In order to come up with such a mechanism, we need to figure out an efficient method, either exact or approximate, to effect a feature update which undoes the feature updates to the individual components of the already computed outlier projections. \\
+
+Once we have such a component, we could use a modified version of the existing algorithm proposed by Manzoor et al in their work\cite{Manzoor:2018:XOD:3219819.3220107}. At an abstract level, the algorithm should use the subset of features in the reference window, for the prediction. For the current window update, the mass profile should be first computed considering the features from the reference window, in union with the features which have been observed in the current window. Then, only the feature in the current update is not considered to compute the mass profile. \\
+
+The difference in the outlier scores in both cases is computed and normalised to obtain the discriminative score for that feature. The feature selection takes place at window changes where the new top features are selected for prediction.
+
 \section{Conclusion}
 
 We have looked at the problem of finding outliers in a stream of data and given a mathematical formulation of the same. In this process, we have also outlined the associated challenges with mining of data streams including but not limited to memory constraints, efficiency and time evolving data. \\
