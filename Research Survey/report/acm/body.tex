@@ -174,7 +174,15 @@ Up till now, we have looked at various algorithms for outlier detection for stre
 
 For a given data sample, all the features do not contribute equally towards it being an outlier or not. For a set of data, only a subset of the features may be able to determine the outliers. Moreover, in the case when the data is changing over time or new features are evolving, this subset of features may change over time. \\
 
+For the models to be widely adopted, the classification of a point as an outlier should be accompanied by a $reason$ or an $explanation$ of why this point has been classified as an outlier. As the data analytics and machine learning communities push harder for explainable models, such a feature selection becomes even more relevant. Consider for eg. a task to detect anomalous credit card transactions for fraud detection. In such a case, the anomaly detection algorithm can reinforce its prediction with a proof, which can essentially be the discriminative features and their values, to add more semantic relevance. \\
+
 While the above algorithms take care of the time evolving data and the feature evolving nature of the stream, the algorithms do not help in identifying and considering only the relevant features, which help in discriminating outliers from the non outliers. 
+
+\section{Proposed problem formulation}
+
+Given a data stream $D$ containing updates of the form $(id, f, \delta)$ where $f$ could be a feature which has been seen or unseen until that instant and $id$ is the unique identifier corresponding to the data point. $\delta$ is the update to the feature value of the data point as described above. \\
+
+We need to train a model to detection outliers from this stream $D$. Besides this, the model should also be able to output a relevance score for the features. Finally, the model should expose and API where we should be able to ask the model to perform outlier detection using the top $k$ relevant features. Here $k$ is the input and a high relevance corresponds to a hight feature relevance score.
 
 \section{Conclusion}
 
