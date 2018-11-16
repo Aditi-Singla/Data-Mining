@@ -168,6 +168,14 @@ For this, the authors propose a fixed size $LRU$ cache to keep track of the proc
 
 The authors use this algorithm to solve the outlier detection problem in static and streaming settings with a constant feature space dimensionality and evaluate its performance. The algorithm is able to match the performance of the state of the art, in both cases.
 
+\section{Limitations of existing work}
+
+Up till now, we have looked at various algorithms for outlier detection for streaming data. We have also looked at an efficient algorithm for the setting where the data stream is feature evolving. Most of the above mentioned approaches have considered the outlier detection task to be a two-class classification problem. The setting however is semi-supervised, due to to the rarity of outlier samples at train time. \\
+
+For a given data sample, all the features do not contribute equally towards it being an outlier or not. For a set of data, only a subset of the features may be able to determine the outliers. Moreover, in the case when the data is changing over time or new features are evolving, this subset of features may change over time. \\
+
+While the above algorithms take care of the time evolving data and the feature evolving nature of the stream, the algorithms do not help in identifying and considering only the relevant features, which help in discriminating outliers from the non outliers. 
+
 \section{Conclusion}
 
 We have looked at the problem of finding outliers in a stream of data and given a mathematical formulation of the same. In this process, we have also outlined the associated challenges with mining of data streams including but not limited to memory constraints, efficiency and time evolving data. \\
