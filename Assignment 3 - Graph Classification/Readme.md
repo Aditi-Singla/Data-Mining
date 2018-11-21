@@ -44,8 +44,8 @@
 
 Comparision for execution time for `gSpan`, `fsg` and `gaston` at support thresholds 5, 10, 25, 50, 95:
 
-![Execution time vs Support Threshold](plots/graph.png)
-![Execution time vs Support Threshold on log scale](plots/graph_log.png)
+![Execution time vs Support Threshold](plots/comparison.png)
+![Execution time vs Support Threshold on log scale](plots/comparison_log.png)
 
 ##### Observations
 
