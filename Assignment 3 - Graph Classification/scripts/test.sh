@@ -1,10 +1,10 @@
 #!/bin/bash
 rm data/*.txt data/*.fp
-unzip data/dataset.zip -d data/.
-python scripts/extra/createTest.py data/aido99_all.txt --active data/ca.txt --inactive data/ci_balanced.txt
+unzip data/cancer.zip -d data/.
+python scripts/extra/createTestNoInactives.py data/data.txt --active data/actives.txt
 if [ "$#" == 1 ]; then
-    ./scripts/run.sh data/aido99_all_train.txt data/aido99_all_train_active.txt data/aido99_all_train_inactive.txt data/aido99_all_test.txt "$1"
+    ./scripts/run.sh data/data_train.txt data/data_train_active.txt data/data_train_inactive.txt data/data_test.txt "$1"
 else
-    ./scripts/run.sh data/aido99_all_train.txt data/aido99_all_train_active.txt data/aido99_all_train_inactive.txt data/aido99_all_test.txt
+    ./scripts/run.sh data/data_train.txt data/data_train_active.txt data/data_train_inactive.txt data/data_test.txt
 fi
-# rm data/*.txt data/*.fp
+rm data/*.txt data/*.fp
