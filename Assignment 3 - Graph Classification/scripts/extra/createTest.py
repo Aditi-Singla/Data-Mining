@@ -2,6 +2,8 @@ import os
 import sys
 import argparse
 
+SPLIT_RATIO = 5
+
 
 def getParser():
     parser = argparse.ArgumentParser(
@@ -33,7 +35,7 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
                 trainF.write(lines[i])
                 writestream = trainF
             else:
-                if (currID % 5 != 0):
+                if currID % SPLIT_RATIO != 0:
                     trainF.write(lines[i])
                     if graphID in activeIDs:
                         trainActF.write('{}\n'.format(graphID))
@@ -48,7 +50,7 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
                         testLabelF.write('2\n')
                     writestream = testF
                 currID += 1
-        
+
             writestream.write(lines[i + 1])
             V = int(lines[i + 1].strip())
             i += 2

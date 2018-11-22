@@ -23,14 +23,12 @@ def getParser():
     parser.add_argument('testData', help='Testing database of graphs')
     parser.add_argument('testLabels', help='Labels of test graphs')
     parser.add_argument('--support', default=0.2, type=float,
-                        help='Support threshold for gSpan')
+                        help='Support threshold for gSpan/gBolt')
     return parser
 
 
 def runFSG(convFile, fsgOutputFile, support):
-
-    os.system('./libraries/gBolt -input_file {} -output_file {} -support {} -pattern'.format(
-        convFile, fsgOutputFile[:-3], support))
+    os.system('./libraries/gSpan -f {} -s {} -i -o'.format(convFile, support))
 
 
 def convGraphStr(graphStr):
@@ -72,7 +70,7 @@ def getTrainVectors(fsgOutputFile, labelFile, numGraphs, numFeatures):
     return X, Y, FSG
 
 
-def getTestGraphs(testConvFile, labelFile):
+def getTestGraphs(testConvFile):
     testGraphs = []
     with open(testConvFile, 'r') as testConvF:
         i = 0
@@ -87,9 +85,7 @@ def getTestGraphs(testConvFile, labelFile):
                 currGraphStr += line
         testGraphs.append(convGraphStr(currGraphStr))
 
-    with open(labelFile, 'r') as lf:
-        Y = list(map(lambda x: int(x.strip()), lf.readlines()))
-    return testGraphs, Y
+    return testGraphs
 
 
 def getTestVectors(testGraphs, FSG):
@@ -108,12 +104,15 @@ def getFrequencyMaps(X_train, Y_train):
     numInactive = len(X_train) - numActive
     featFreqActive, featFreqInactive = defaultdict(int), defaultdict(int)
     for i in range(len(X_train)):
-        for j in range(len(X_train[i])):
+        numFeatures = len(X_train[i])
+        # score = sum([1 for y in X_train[i] if y == 0]) / (1.0 * numFeatures)
+        score = 1
+        for j in range(numFeatures):
             if X_train[i][j] == 1:
                 if Y_train[i] == ACTIVE_LABEL:
-                    featFreqActive[j] += (1.0 / numActive)
+                    featFreqActive[j] += (1.0 / numActive) * score
                 else:
-                    featFreqInactive[j] += (1.0 / numInactive)
+                    featFreqInactive[j] += (1.0 / numInactive) * score
     return featFreqActive, featFreqInactive
 
 
@@ -125,18 +124,7 @@ def getTopKDiscriminativeFeatures(numFeatures, featFreqActive, featFreqInactive,
     return cols
 
 
-def idfTransform(X_train, featFreqActive, featFreqInactive):
-    numFeatures = len(X_train[0])
-    for i in range(len(X_train)):
-        for j in range(numFeatures):
-            if X_train[i][j] == 1:
-                X_train[i][j] = featFreqActive[j] - featFreqInactive[j]
-    X_train = normalize(X_train, axis=1, norm='l2')
-    scaler = StandardScaler().fit(X_train)
-    return X_train, scaler
-
-
-def libSVMformat(X, Y, out_file):
+def libSVMformatTrain(X, Y, out_file):
     with open(out_file, 'w') as out:
         for i in range(len(X)):
             if Y[i] == 1:
@@ -151,9 +139,21 @@ def libSVMformat(X, Y, out_file):
                 out.write('\n')
 
 
+def libSVMformatTest(X, out_file):
+    with open(out_file, 'w') as out:
+        for i in range(len(X)):
+            for j in range(1, len(X[i]) + 1):
+                if X[i][j - 1] != 0:
+                    out.write(str(j) + ':' + str(X[i][j - 1]))
+                    out.write(str(' '))
+            if (i < len(X) - 1):
+                out.write('\n')
+
+
 def RunClassify(k, support, numTrainGraphs, args):
     print('Support : {} Features : {}'.format(support, k))
-    fsgOutputFile = '{}.fp.t0'.format(args['trainData'])
+
+    fsgOutputFile = '{}.fp'.format(args['trainData'])
     runFSG(args['trainData'], fsgOutputFile, support)
     numFeatures = int(subprocess.check_output(
         'grep \# {} | wc -l'.format(fsgOutputFile), shell=True).strip())
@@ -166,27 +166,25 @@ def RunClassify(k, support, numTrainGraphs, args):
         numFeatures, featFreqActive, featFreqInactive, k)
     X_train, FSG = X_train[:, cols], np.array(FSG).take(cols)
 
-    testGraphs, Y_test = getTestGraphs(args['testData'], args['testLabels'])
+    testGraphs = getTestGraphs(args['testData'])
     X_test = getTestVectors(testGraphs, FSG)
 
-    acc = LinearSVC(max_iter=10000).fit(X_train, Y_train).score(X_test, Y_test)
-
-    return acc, X_train, Y_train, X_test, Y_test
+    return X_train, Y_train, X_test
 
 
 def Run(args):
     numTrainGraphs = int(subprocess.check_output(
         'cat {} | wc -l'.format(args['trainLabels']), shell=True).strip())
 
-    mAcc, mX_train, mY_train, mX_test, mY_test = 0, None, None, None, None
-    for k in range(50, 200, 50):
-        acc, X_train, Y_train, X_test, Y_test = RunClassify(
-            k, args['support'], numTrainGraphs, args)
-        if acc > mAcc:
-            mAcc, mX_train, mY_train, mX_test, mY_test = acc, X_train, Y_train, X_test, Y_test
+    k = 100
+    X_train, Y_train, X_test = RunClassify(
+        k, args['support'], numTrainGraphs, args)
 
-    libSVMformat(mX_train, mY_train, 'train.txt')
-    libSVMformat(mX_test, mY_test, 'test.txt')
+    with open(args['testLabels'], 'r') as lf:
+        Y_test = list(map(lambda x: int(x.strip()), lf.readlines()))
+
+    libSVMformatTrain(X_train, Y_train, 'train.txt')
+    libSVMformatTrain(X_test, Y_test, 'test.txt')
 
 
 if __name__ == '__main__':

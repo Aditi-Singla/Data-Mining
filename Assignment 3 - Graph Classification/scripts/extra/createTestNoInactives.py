@@ -2,10 +2,12 @@ import os
 import sys
 import argparse
 
+SPLIT_RATIO = 5
+
 
 def getParser():
     parser = argparse.ArgumentParser(
-        description='Create test set out of complete data')
+        description='Create test set out of complete data based on the file active list')
     parser.add_argument('inFile', help='Input Database of graphs')
     parser.add_argument('--active', default="", help='Active graph IDs')
     return parser
@@ -29,7 +31,7 @@ def convert(inFile, trainFile, trainActFile, trainInactFile,
                 i += 1
                 continue
             graphID = lines[i][1:].strip()
-            if (currID % 10 != 0):
+            if (currID % SPLIT_RATIO != 0):
                 trainF.write(lines[i])
                 if graphID in activeIDs:
                     trainActF.write('{}\n'.format(graphID))

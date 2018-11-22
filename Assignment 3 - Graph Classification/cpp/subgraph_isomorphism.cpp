@@ -34,7 +34,6 @@ void getGraphs(vector<graph_type> &g, string infilename) {
 
   while(getline(fin, line)) {
     // first line has been obtained
-    // cout << line << endl;
     graph_type graph;
 
     // obtain num of vertices
@@ -42,13 +41,11 @@ void getGraphs(vector<graph_type> &g, string infilename) {
 
     int num_vertices = stoi(line);
 
-    for (int i = 0; i < num_vertices; ++i)
-    {
+    for (int i = 0; i < num_vertices; ++i) {
       getline(fin, line);
 
       if (m.find(line) == m.end()) {
         m[line] = startIndex++;
-        // cout << line << endl;
       }
 
       add_vertex(vp(to_string(m[line])), graph);
@@ -59,8 +56,7 @@ void getGraphs(vector<graph_type> &g, string infilename) {
 
     int num_edges = stoi(line);
 
-    for (int i = 0; i < num_edges; ++i)
-    {
+    for (int i = 0; i < num_edges; ++i) {
       getline(fin, line);
       istringstream str(line);
       string node1 = "", node2 = "", edgeLabel = "";
@@ -82,14 +78,11 @@ void getFrequentGraphs(vector<graph_type> &g, string infilename) {
 
   while(getline(fin, line)) {
     // first line has been obtained
-    // cout << line << endl;
     graph_type graph;
 
     // obtain num of vertices
     while(getline(fin, line)) {
-      // cout << line << endl;
       if (line.empty()) {
-        // cout << "empty" << endl;
         break;
       }
 
@@ -137,7 +130,6 @@ template<typename Graph1, typename Graph2> struct compute_matrix {
           typename CorrespondenceMap2To1>
   bool operator()(CorrespondenceMap1To2 f, CorrespondenceMap2To1 g) const {
     (*mat_)[i_][j_] = 1;
-    // cout << "ISO " << i_ << " " << j_ << endl;
   }
 };
 
@@ -155,11 +147,7 @@ int main(int argc, char** argv) {
   getGraphs(train_graphs, train_file);
   getGraphs(test_graphs, test_file);
 
-  // cout << train_graphs.size() << " " << test_graphs.size() << endl;
-
   getFrequentGraphs(fsg, fsg_file);
-
-  // cout << fsg.size() << endl;
 
   int NUM_TRAIN_SIZE = train_graphs.size();
   int NUM_FSG_SIZE = fsg.size();
@@ -168,9 +156,9 @@ int main(int argc, char** argv) {
 
   for (int i = 0; i < NUM_FSG_SIZE; i++) {
     graph_type graph1 = fsg[i];
+
     for (int j = 0; j < NUM_TRAIN_SIZE; j++) {
       graph_type graph2 = train_graphs[j];
-      // cout << i << " " << j << endl;
 
       vertex_comp_t vertex_comp = make_property_map_equivalent(get(vertex_name, graph1), get(vertex_name, graph2));
       edge_comp_t edge_comp = make_property_map_equivalent(get(edge_name, graph1), get(edge_name, graph2));
@@ -181,13 +169,6 @@ int main(int argc, char** argv) {
       vf2_subgraph_iso(graph1, graph2, callback, vertex_order_by_mult(graph1),
                        edges_equivalent(edge_comp).vertices_equivalent(vertex_comp));
     }
-  }
-
-  for (int i = 0; i < mat.size(); i++) {
-    for (int j = 0; j < mat[0].size(); j++) {
-      cout << mat[i][j] << " ";
-    }
-    cout << endl;
   }
 
   return 0;
